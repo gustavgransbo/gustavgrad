@@ -92,6 +92,9 @@ class Tensor:
         self.data += ensure_tensor(other).data
         return self
 
+    def sum(self, axis=None) -> 'Tensor':
+        return _sum(self, axis)
+
 
 """ Functions on tensors """
 def _add(t1: Tensor, t2: Tensor) -> Tensor:
@@ -110,18 +113,32 @@ def _add(t1: Tensor, t2: Tensor) -> Tensor:
         def grad_fn1(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t1.shape)
 
-        depends_on.append(
-            Dependency(t1, grad_fn1)
-        )
+        depends_on.append(Dependency(t1, grad_fn1))
 
     if t2.requires_grad:
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t2.shape)
-        depends_on.append(
-            Dependency(t2, grad_fn2)
-        )
+        depends_on.append(Dependency(t2, grad_fn2))
     
     return Tensor(data, requires_grad, depends_on)
+
+def _sum(tensor: Tensor, axis=None) -> Tensor:
+    """
+    Sum a tensor along given axis. The gradient function is simply the identity function.
+    """
+    data = tensor.data.sum(axis)
+    requires_grad = tensor.requires_grad
+    depends_on = []
+    if requires_grad:
+        def grad_fn(grad: np.ndarray) -> np.ndarray:
+            if axis is not None:
+                # Handle broadcasting correctly
+                grad = np.expand_dims(grad, axis)
+            return grad * np.ones_like(tensor.data)
+        depends_on.append(Dependency(tensor, grad_fn))
+    
+    return Tensor(data, requires_grad, depends_on)
+    
 
 """ Helper Functions """
 def sum_out_broadcasted_dims(grad: np.ndarray, tensor_shape: tuple) -> np.ndarray:
