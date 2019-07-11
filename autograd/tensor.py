@@ -15,13 +15,21 @@ class Dependency(NamedTuple):
     tensor : 'Tensor'
     grad_fn: Callable[[np.ndarray], np.ndarray]
 
+# Types that can be converted to an ndarray
 Arrayable = Union[np.ndarray, list, float]
-
-def ensure_array(data: Arrayable) -> 'Tensor':
+def ensure_array(data: Arrayable) -> np.ndarray:
     if isinstance(data, np.ndarray):
         return data
     else:
         return np.asarray(data)
+
+# Types that can be converted to a tensor
+Tensorable = Union['Tensor', np.ndarray, float]
+def ensure_tensor(data: Tensorable) -> 'Tensor':
+    if isinstance(data, Tensor):
+        return data
+    else:
+        return Tensor(data)
 
 class Tensor:
     """
@@ -36,11 +44,11 @@ class Tensor:
                 requires_grad: bool = False, 
                 depends_on: List[Dependency] = []) -> None:
         
-        # Private, see self.data() property for explanation
+        # Private, see self.data() property for explanation TODO: Perhaps cast to float?
         self._data = ensure_array(data)
         self.requires_grad = requires_grad
         self.depends_on = depends_on
-        self.grad : Optional['Tensor'] = None # TODO: call zero_grad if requires grad?
+        self.grad : Optional['Tensor'] = None
         self.shape: tuple = self._data.shape
 
         if self.requires_grad:
@@ -73,6 +81,16 @@ class Tensor:
 
         for tensor, grad_fn in self.depends_on:
             tensor.backward(grad_fn(grad))
+
+    def __add__(self, other: 'Tensor') -> 'Tensor':
+        return _add(self, ensure_tensor(other))
+
+    def __radd__(self, other: 'Tensor') -> 'Tensor':
+        return _add(ensure_tensor(other), self)
+
+    def __iadd__(self, other:'Tensor') -> 'Tensor':
+        self.data += ensure_tensor(other).data
+        return self
 
 
 """ Functions on tensors """
