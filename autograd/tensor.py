@@ -54,6 +54,9 @@ class Tensor:
         if self.requires_grad:
             self.zero_grad()
 
+    def __repr__(self) -> str:
+        return f"Tensor(data={self.data}, requires_grad={self.requires_grad})"
+
     @property
     def data(self) -> np.ndarray:
         return self._data
@@ -82,13 +85,13 @@ class Tensor:
         for tensor, grad_fn in self.depends_on:
             tensor.backward(grad_fn(grad))
 
-    def __add__(self, other: 'Tensor') -> 'Tensor':
+    def __add__(self, other: Tensorable) -> 'Tensor':
         return _add(self, ensure_tensor(other))
 
-    def __radd__(self, other: 'Tensor') -> 'Tensor':
+    def __radd__(self, other: Tensorable) -> 'Tensor':
         return _add(ensure_tensor(other), self)
 
-    def __iadd__(self, other:'Tensor') -> 'Tensor':
+    def __iadd__(self, other: Tensorable) -> 'Tensor':
         self.data += ensure_tensor(other).data
         return self
 
@@ -132,7 +135,7 @@ def _sum(tensor: Tensor, axis=None) -> Tensor:
     if requires_grad:
         def grad_fn(grad: np.ndarray) -> np.ndarray:
             if axis is not None:
-                # Handle broadcasting correctly
+                # Expand the summed axis to enable correct broadcasting
                 grad = np.expand_dims(grad, axis)
             return grad * np.ones_like(tensor.data)
         depends_on.append(Dependency(tensor, grad_fn))
