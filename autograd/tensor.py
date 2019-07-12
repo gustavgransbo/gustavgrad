@@ -95,6 +95,16 @@ class Tensor:
         self.data += ensure_tensor(other).data
         return self
 
+    def __mul__(self, other: Tensorable) -> 'Tensor':
+        return _mul(self, ensure_tensor(other))
+
+    def __rmul__(self, other: Tensorable) -> 'Tensor':
+        return _mul(ensure_tensor(other), self)
+
+    def __imul__(self, other: Tensorable) -> 'Tensor':
+        self.data *= ensure_tensor(other).data
+        return self
+
     def sum(self, axis=None) -> 'Tensor':
         return _sum(self, axis)
 
@@ -120,6 +130,33 @@ def _add(t1: Tensor, t2: Tensor) -> Tensor:
 
     if t2.requires_grad:
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
+            return sum_out_broadcasted_dims(grad, t2.shape)
+        depends_on.append(Dependency(t2, grad_fn2))
+    
+    return Tensor(data, requires_grad, depends_on)
+
+def _mul(t1: Tensor, t2: Tensor) -> Tensor:
+    """ Multiplies two tensors element-wise.
+
+    If t3 = t1 * t2
+    dJ/dt1 = dJ/t3 * dt3/dt1, dt3/dt1 = t2
+    dJ/dt2 = dJ/t3 * dt3/dt2, dt3/dt2 = t1
+    BUT broadcasting must be taken into account the same way it was done for addition
+    """
+
+    data = t1.data * t2.data
+    requires_grad = t1.requires_grad or t2.requires_grad
+    depends_on = []
+
+    if t1.requires_grad:
+        def grad_fn1(grad: np.ndarray) -> np.ndarray:
+            grad = grad * t2.data
+            return sum_out_broadcasted_dims(grad, t1.shape)
+        depends_on.append(Dependency(t1, grad_fn1))
+    
+    if t2.requires_grad:
+        def grad_fn2(grad: np.ndarray) -> np.ndarray:
+            grad = grad * t1.data
             return sum_out_broadcasted_dims(grad, t2.shape)
         depends_on.append(Dependency(t2, grad_fn2))
     
