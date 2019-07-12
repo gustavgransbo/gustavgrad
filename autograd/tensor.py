@@ -115,6 +115,9 @@ class Tensor:
         self.data *= ensure_tensor(other).data
         return self
 
+    def __matmul__(self, other: 'Tensor') -> 'Tensor':
+        return _matmul(self, other)
+
     def sum(self, axis=None) -> 'Tensor':
         return _sum(self, axis)
 
@@ -190,6 +193,30 @@ def _mul(t1: Tensor, t2: Tensor) -> Tensor:
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             grad = grad * t1.data
             return sum_out_broadcasted_dims(grad, t2.shape)
+        depends_on.append(Dependency(t2, grad_fn2))
+    
+    return Tensor(data, requires_grad, depends_on)
+
+def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
+    """ Matrix-multiplies two tensors element-wise.
+
+    t1: (N,K)
+    t2: (K,M)
+    t3: (N,M)
+    """
+
+    data = t1.data @ t2.data # (N,M)
+    requires_grad = t1.requires_grad or t2.requires_grad
+    depends_on = []
+
+    if t1.requires_grad:
+        def grad_fn1(grad: np.ndarray) -> np.ndarray:
+            return grad @ t2.data.T # (N,K)
+        depends_on.append(Dependency(t1, grad_fn1))
+    
+    if t2.requires_grad:
+        def grad_fn2(grad: np.ndarray) -> np.ndarray:
+            return t1.data.T @ grad # (K,M)
         depends_on.append(Dependency(t2, grad_fn2))
     
     return Tensor(data, requires_grad, depends_on)
