@@ -95,6 +95,16 @@ class Tensor:
         self.data += ensure_tensor(other).data
         return self
 
+    def __sub__(self, other: Tensorable) -> 'Tensor':
+        return _sub(self, ensure_tensor(other))
+
+    def __rsub__(self, other: Tensorable) -> 'Tensor':
+        return _sub(ensure_tensor(other), self)
+
+    def __isub__(self, other: Tensorable) -> 'Tensor':
+        self.data -= ensure_tensor(other).data
+        return self
+
     def __mul__(self, other: Tensorable) -> 'Tensor':
         return _mul(self, ensure_tensor(other))
 
@@ -131,6 +141,28 @@ def _add(t1: Tensor, t2: Tensor) -> Tensor:
     if t2.requires_grad:
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t2.shape)
+        depends_on.append(Dependency(t2, grad_fn2))
+    
+    return Tensor(data, requires_grad, depends_on)
+
+def _sub(t1: Tensor, t2: Tensor) -> Tensor:
+    """ SUbtracts tensor t2 from tensor t1
+    """
+
+    data = t1.data - t2.data
+    requires_grad = t1.requires_grad or t2.requires_grad
+    depends_on = []
+
+    if t1.requires_grad:
+        def grad_fn1(grad: np.ndarray) -> np.ndarray:
+            return sum_out_broadcasted_dims(grad, t1.shape)
+
+        depends_on.append(Dependency(t1, grad_fn1))
+
+    if t2.requires_grad:
+        def grad_fn2(grad: np.ndarray) -> np.ndarray:
+            """ When backpropagating to t2, inverse the gradient. """
+            return sum_out_broadcasted_dims(-grad, t2.shape)
         depends_on.append(Dependency(t2, grad_fn2))
     
     return Tensor(data, requires_grad, depends_on)
