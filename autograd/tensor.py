@@ -1,7 +1,7 @@
 """
 Tensor Class and affiliated functions
 """
-from typing import List, NamedTuple, Callable, Optional, Union
+from typing import List, NamedTuple, Callable, Optional, Union, Tuple
 import numpy as np
 
 class Dependency(NamedTuple):
@@ -117,6 +117,9 @@ class Tensor:
 
     def __matmul__(self, other: 'Tensor') -> 'Tensor':
         return _matmul(self, other)
+
+    def __getitem__(self, idxs) -> 'Tensor':
+        return _slice(self, idxs)
 
     def sum(self, axis=None) -> 'Tensor':
         return _sum(self, axis)
@@ -237,7 +240,20 @@ def _sum(tensor: Tensor, axis=None) -> Tensor:
         depends_on.append(Dependency(tensor, grad_fn))
     
     return Tensor(data, requires_grad, depends_on)
-    
+
+def _slice(tensor: Tensor, idxs) -> Tensor: 
+    """ Slices a tensor using numpy slicing logic"""
+    data = tensor.data[idxs]
+    requires_grad = tensor.requires_grad
+    depends_on = []
+    if requires_grad:
+        def grad_fn(grad : np.ndarray) -> np.ndarray:
+            new_grad = np.zeros_like(tensor.data)
+            new_grad[idxs] = grad
+            return new_grad
+        depends_on.append(Dependency(tensor, grad_fn))
+
+    return Tensor(data, requires_grad, depends_on)
 
 """ Helper Functions """
 def sum_out_broadcasted_dims(grad: np.ndarray, tensor_shape: tuple) -> np.ndarray:
