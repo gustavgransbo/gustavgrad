@@ -113,3 +113,18 @@ class TestTensorSub(unittest.TestCase):
 
         assert t4.data.tolist() == [[0., 1., 2.], [3., 4., 5.]]
         assert t4.grad is None
+
+    def test_chained_sub(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+        t2 = Tensor([4, 5, 6], requires_grad=True)
+        t3 = Tensor([7, 8, 9], requires_grad=True)
+
+        t4 = t3 - t2 - t1
+
+        assert t4.data.tolist() == [2, 1, 0]
+
+        t4.backward(np.asarray([1., 1., 1.]))
+
+        assert t1.grad.tolist() == [-1., -1., -1.]
+        assert t2.grad.tolist() == [-1., -1., -1.]
+        assert t3.grad.tolist() == [1., 1., 1.]

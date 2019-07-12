@@ -116,6 +116,21 @@ class TestTensorAdd(unittest.TestCase):
         assert t4.data.tolist() == [[2, 3, 4], [5, 6, 7]]
         assert t4.grad is None
 
+    def test_chained_add(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+        t2 = Tensor([4, 5, 6], requires_grad=True)
+        t3 = Tensor([7, 8, 9], requires_grad=True)
+
+        t4 = t1 + t2 + t3
+
+        assert t4.data.tolist() == [12, 15, 18]
+
+        t4.backward(np.asarray([1., 1., 1.]))
+
+        assert t1.grad.tolist() == [1., 1., 1.]
+        assert t2.grad.tolist() == [1., 1., 1.]
+        assert t3.grad.tolist() == [1., 1., 1.]
+
 if __name__ == "__main__":
     """For debugging"""
     TestTensorAdd().test_simple_add()

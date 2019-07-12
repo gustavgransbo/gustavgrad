@@ -112,3 +112,18 @@ class TestTensorMul(unittest.TestCase):
 
         assert t4.data.tolist() == [[2, 4, 6], [8, 10, 12]]
         assert t4.grad is None
+
+    def test_chained_mul(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+        t2 = Tensor([4, 5, 6], requires_grad=True)
+        t3 = Tensor([7, 8, 9], requires_grad=True)
+
+        t4 = t1 * t2 * t3
+
+        assert t4.data.tolist() == [28, 80, 162]
+
+        t4.backward(np.asarray([1., 1., 1.]))
+
+        assert t1.grad.tolist() == [28., 40., 54.]
+        assert t2.grad.tolist() == [7., 16., 27.]
+        assert t3.grad.tolist() == [4., 10., 18.]
