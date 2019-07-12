@@ -19,14 +19,21 @@ b = Tensor(np.random.rand(), requires_grad = True)
 
 # Train the model
 lr = 0.001
+batch_size = 25
 for _ in range(1000):
 
-    w.zero_grad(), b.zero_grad()
+    # Train in batches
+    idx = np.arange(x.shape[0])
+    np.random.shuffle(idx)
 
-    pred = x @ w + b
-    errors = (y - pred)
-    mse_loss = (errors * errors).sum()
-    mse_loss.backward()
+    for start in range(0, x.shape[0], batch_size):
+        w.zero_grad(), b.zero_grad()
+
+        batch_idx = idx[start : start+batch_size]
+        pred = x[batch_idx] @ w + b
+        errors = (y[batch_idx] - pred)
+        mse_loss = (errors * errors).sum()
+        mse_loss.backward()
 
     print(mse_loss.data)
 

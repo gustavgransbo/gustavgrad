@@ -249,7 +249,7 @@ def _slice(tensor: Tensor, idxs) -> Tensor:
     if requires_grad:
         def grad_fn(grad : np.ndarray) -> np.ndarray:
             new_grad = np.zeros_like(tensor.data)
-            new_grad[idxs] = grad
+            new_grad[idxs] = grad #pylint: disable=unsupported-assignment-operation
             return new_grad
         depends_on.append(Dependency(tensor, grad_fn))
 
