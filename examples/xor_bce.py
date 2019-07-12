@@ -63,6 +63,7 @@ for _ in range(epochs):
     
     print(loss.data)
 
+# Apply sigmoid to logits to get the actual predictions
 print(_sigmoid(logits.data))
 
         

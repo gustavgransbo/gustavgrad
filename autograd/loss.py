@@ -8,15 +8,15 @@ class Loss:
     def loss(self, target: Tensorable, pred: Tensor) -> Tensor:
         raise NotImplementedError
 
-class SummedSquareLoss(Loss):
-    """ Summed square loss """
+class SquaredErrorLoss(Loss):
+    """ Squared error loss """
     def loss(self, target: Tensorable, pred: Tensor) -> Tensor:
         error = ensure_tensor(target) - pred
         return (error * error).sum()
 
 class LogitBinaryCrossEntropy(Loss):
     """ Binary cross entropy with logits
-    Applies the logistic function (sigmoid) to predictions before calculating loss
+    Applies the logistic function (sigmoid) to logits before calculating loss
     """
     def loss(self, target: Tensorable, logits: Tensor) -> Tensor:
 
