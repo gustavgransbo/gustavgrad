@@ -5,6 +5,7 @@ Example of how to learn the XOR function using the autograd library
 
 from autograd import Tensor
 from autograd.functions import tanh
+from autograd.loss import SquaredErrorLoss
 import numpy as np
 
 X = Tensor([
@@ -51,21 +52,20 @@ class Model:
 epochs = 1000
 lr = 0.01
 mlp = Model()
+se_loss = SquaredErrorLoss()
 
 for _ in range(epochs):
 
     mlp.zero_grad()
 
     pred = mlp.predict(X)
-    error = y - pred
-    mse_loss = (error * error).sum()
-    mse_loss.backward()
+    loss = se_loss.loss(y, pred)
+    loss.backward()
 
     mlp.sgd_step(lr)
     
-    print(mse_loss.data)
+    print(loss.data)
 
-print(pred.data
-)
+print(pred.data)
 
         
