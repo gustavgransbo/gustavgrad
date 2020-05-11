@@ -19,6 +19,7 @@ from autograd import Tensor
 from autograd.functions import tanh
 from autograd.loss import LogitBinaryCrossEntropy
 from autograd.module import Module, Parameter
+from autograd.optim import SGD
 
 import numpy as np
 from tqdm import tqdm
@@ -56,14 +57,10 @@ class Model(Module):
         x = x@self.layer2 + self.bias2
         return x
 
-    def sgd_step(self, lr: float = 0.001) -> None:
-
-        for parameter in self.parameters():
-            parameter -= parameter.grad * lr
 
 epochs = 10_000
-lr = 0.01
 mlp = Model()
+optimizer = SGD(0.01)
 # Ideally I would use cross-entropy and a softmax layer since the targets are mutually exclusive,
 # but I haven't implemented cross entropy loss.
 bce_loss = LogitBinaryCrossEntropy()
@@ -83,7 +80,8 @@ for _ in tqdm(range(epochs)):
         loss = bce_loss.loss(y, pred)
         loss.backward()
 
-        mlp.sgd_step(lr)
+        optimizer.step(mlp)
+        
     np.random.shuffle(idx)
 
 # Includes 0, even though we wont actually evaluate on 0
