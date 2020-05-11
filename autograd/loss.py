@@ -20,12 +20,12 @@ class LogitBinaryCrossEntropy(Loss):
     """
     def loss(self, target: Tensorable, logits: Tensor) -> Tensor:
 
-        target = ensure_tensor(target)
+        tensor_target = ensure_tensor(target)
         
         # Calculate stable binary cross entropy loss
         x = np.clip(logits.data, 0, None)
         neg_abs = - np.abs(logits.data)
-        data = x - logits.data*target.data + np.log(1 + np.exp(neg_abs))
+        data = x - logits.data*tensor_target.data + np.log(1 + np.exp(neg_abs))
         # Just do the mean for now
         data = data.mean()
         
@@ -33,7 +33,7 @@ class LogitBinaryCrossEntropy(Loss):
         depends_on = []
         if requires_grad:
             def grad_fn(grad:np.ndarray) -> np.ndarray:
-                return grad * (_sigmoid(logits.data) - target.data)
+                return grad * (_sigmoid(logits.data) - tensor_target.data)
             depends_on.append(Dependency(logits, grad_fn))
         
         return Tensor(data, requires_grad, depends_on)
