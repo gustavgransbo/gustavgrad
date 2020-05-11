@@ -12,12 +12,17 @@ encodings of numbers as input, and outputing a one-hot encoded label correspondi
 the four classes. Training is done on the numbers 100-1023.
 """
 
+from typing import List
+import time
+
 from autograd import Tensor
 from autograd.functions import tanh
 from autograd.loss import LogitBinaryCrossEntropy
-from typing import List
+from autograd.module import Module, Parameter
+
 import numpy as np
-import time
+from tqdm import tqdm
+
 
 def binary_encode(x: int) -> List[int]:
     """ Binary encode x using 10 binary digits"""
@@ -37,13 +42,13 @@ def fizz_buzz_encode(x: int) -> List[int]:
 X_train = Tensor(np.asarray([binary_encode(x) for x in range(101, 1024)]))
 y_train = Tensor(np.asarray([fizz_buzz_encode(x) for x in range(101, 1024)]))
 
-class Model:
+class Model(Module):
     """ A multi layer perceptron that should learn FizzBuzz function """
-    def __init__(self) -> None:
-        self.layer1 = Tensor(np.random.randn(10, 100), requires_grad=True)
-        self.bias1 = Tensor(np.random.randn(100), requires_grad=True)
-        self.layer2 = Tensor(np.random.randn(100, 4), requires_grad=True)
-        self.bias2 = Tensor(np.random.randn(4), requires_grad=True)
+    def __init__(self, num_hidden: int = 100) -> None:
+        self.layer1 = Parameter(10, 100)
+        self.bias1 = Parameter(num_hidden)
+        self.layer2 = Parameter(num_hidden, 4)
+        self.bias2 = Parameter(4)
 
     def predict(self, x: Tensor) -> Tensor:
         x = x@self.layer1 + self.bias1
@@ -51,19 +56,12 @@ class Model:
         x = x@self.layer2 + self.bias2
         return x
 
-    def zero_grad(self) -> None:
-        self.layer1.zero_grad()
-        self.layer2.zero_grad()
-        self.bias1.zero_grad()
-        self.bias2.zero_grad()
-
     def sgd_step(self, lr: float = 0.001) -> None:
-        self.layer1 -= self.layer1.grad * lr
-        self.layer2 -= self.layer2.grad * lr
-        self.bias1 -= self.bias1.grad * lr
-        self.bias2 -= self.bias2.grad * lr
 
-epochs = 10000
+        for parameter in self.parameters():
+            parameter -= parameter.grad * lr
+
+epochs = 10_000
 lr = 0.01
 mlp = Model()
 # Ideally I would use cross-entropy and a softmax layer since the targets are mutually exclusive,
@@ -72,9 +70,8 @@ bce_loss = LogitBinaryCrossEntropy()
 idx = np.arange(X_train.shape[0])
 batch_size = 64
 t1 = time.time()
-for epoch in range(epochs):
+for _ in tqdm(range(epochs)):
 
-    epoch_loss = 0.
     for start in range(0, X_train.shape[0], batch_size):
 
         X = X_train[idx[start:start+batch_size]]
@@ -87,9 +84,6 @@ for epoch in range(epochs):
         loss.backward()
 
         mlp.sgd_step(lr)
-        
-        epoch_loss += loss.data
-    print(f"Epoch: {epoch}, Loss {epoch_loss}")
     np.random.shuffle(idx)
 
 # Includes 0, even though we wont actually evaluate on 0
@@ -213,9 +207,3 @@ Output after training for 10,000 epochs:
 Correct: 100 / 100
 Time taken (train+evaluate): 313.07683658599854s
 """
-    
-
-
-
-
-        
