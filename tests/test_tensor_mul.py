@@ -1,5 +1,4 @@
 import unittest
-import pytest
 import numpy as np
 from autograd import Tensor
 
@@ -19,7 +18,8 @@ class TestTensorMul(unittest.TestCase):
         assert t2.grad.tolist() == [1.0, 2.0, 3.0]
 
     def test_broadcasted_mul1(self) -> None:
-        """ In this test t2 is broadcasted by adding a dimension and then repeating it's values"""
+        """ In this test t2 is broadcasted by adding a dimension and then
+        repeating it's values"""
         t1 = Tensor([[1, 2, 3], [4, 5, 6]], requires_grad=True)
         t2 = Tensor([1, 2, 3], requires_grad=True)
 
@@ -30,7 +30,8 @@ class TestTensorMul(unittest.TestCase):
         t3.backward(np.asarray([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
 
         assert t1.grad.tolist() == [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
-        # The gradient of t2 should be doubled since all it's values are broadcasted to two places.
+        # The gradient of t2 should be doubled since all it's values are
+        # broadcasted to two places.
         assert t2.grad.tolist() == [5.0, 7.0, 9.0]
 
     def test_broadcasted_mul2(self) -> None:
@@ -45,11 +46,13 @@ class TestTensorMul(unittest.TestCase):
         t3.backward(np.asarray([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]))
 
         assert t1.grad.tolist() == [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
-        # The gradient of t2 should be doubled since all it's values are broadcasted to two places.
+        # The gradient of t2 should be doubled since all it's values are
+        # broadcasted to two places.
         assert t2.grad.tolist() == [[5.0, 7.0, 9.0]]
 
     def test_broadcasted_mul3(self) -> None:
-        """ In this test t2 has shape (3, 1, 2) and is broadcasted across an inner dimension"""
+        """ In this test t2 has shape (3, 1, 2) and is broadcasted across an
+        inner dimension"""
         t1 = Tensor(np.ones(shape=(3, 2, 2)), requires_grad=True)
         t2 = Tensor(3 * np.ones(shape=(3, 1, 2)), requires_grad=True)
 

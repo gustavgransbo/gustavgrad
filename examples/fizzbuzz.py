@@ -1,15 +1,16 @@
-""" 
-Since this autograd project was inspired by Joel Grus, it feels only right that 
+"""
+Since this autograd project was inspired by Joel Grus, it feels only right that
 I use it to solve his go-to problem: FizzBuzz
 
-The FizzBuzz problem tasks a prospective software engineer to develop a program that 
-for takes all the numbers from 1 to 100, and prints them with a simple twist.
-If a number is divisible by 3 you print Fizz, if it's divisible by 5 you print Buzz,
-and if it's divisible by 15 you print FizzBuzz. All other numbers are printed as are.
+The FizzBuzz problem tasks a prospective software engineer to develop a program
+that for takes all the numbers from 1 to 100, and prints them with a simple
+twist. If a number is divisible by 3 you print Fizz, if it's divisible by 5 you
+print Buzz, and if it's divisible by 15 you print FizzBuzz. All other numbers
+are printed as are.
 
-Joel's aproach to solve this with a neural net builds upon taking the 10 bit binary-
-encodings of numbers as input, and outputing a one-hot encoded label corresponding to 
-the four classes. Training is done on the numbers 100-1023.
+Joel's aproach to solve this with a neural net builds upon taking the 10 bit
+binary-encodings of numbers as input, and outputing a one-hot encoded label
+corresponding to the four classes. Training is done on the numbers 100-1023.
 """
 
 from typing import List
@@ -65,8 +66,8 @@ class Model(Module):
 epochs = 10_000
 mlp = Model()
 optimizer = SGD(0.01)
-# Ideally I would use cross-entropy and a softmax layer since the targets are mutually exclusive,
-# but I haven't implemented cross entropy loss.
+# Ideally I would use cross-entropy and a softmax layer since the targets are
+# mutually exclusive, but I haven't implemented cross entropy loss.
 bce_loss = LogitBinaryCrossEntropy()
 idx = np.arange(X_train.shape[0])
 batch_size = 64

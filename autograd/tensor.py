@@ -1,7 +1,7 @@
 """
 Tensor Class and affiliated functions
 """
-from typing import List, NamedTuple, Callable, Optional, Union, Tuple
+from typing import List, NamedTuple, Callable, Optional, Union
 import numpy as np
 
 
@@ -55,7 +55,8 @@ class Tensor:
         depends_on: List[Dependency] = [],
     ) -> None:
 
-        # Private, see self.data() property for explanation TODO: Perhaps cast to float?
+        # Private, see self.data() property for explanation
+        # TODO: Perhaps cast to float?
         self._data = ensure_array(data)
         self.requires_grad = requires_grad
         self.depends_on = depends_on
@@ -74,7 +75,8 @@ class Tensor:
 
     @data.setter
     def data(self, value: np.ndarray) -> None:
-        """ Invalidate the gradient of the tensor if data is modified in-place"""
+        """ Invalidate the gradient of the tensor if data is modified in-place
+        """
         self.grad = None
         self._data = value
 
@@ -142,9 +144,9 @@ class Tensor:
 def _add(t1: Tensor, t2: Tensor) -> Tensor:
     """ Adds two tensors
 
-    Gradients of t1 and t2 are the same as t3, so the gradient function is the identity function,
-    UNLESS some dimension of t1 or t2 was broadcasted in the addition, in which case the gradient
-    is increased.
+    Gradients of t1 and t2 are the same as t3, so the gradient function is the
+    identity function, UNLESS some dimension of t1 or t2 was broadcasted in the
+    addition, in which case the gradient is increased.
     """
 
     data = t1.data + t2.data
@@ -200,7 +202,8 @@ def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     If t3 = t1 * t2
     dJ/dt1 = dJ/t3 * dt3/dt1, dt3/dt1 = t2
     dJ/dt2 = dJ/t3 * dt3/dt2, dt3/dt2 = t1
-    BUT broadcasting must be taken into account the same way it was done for addition
+    BUT broadcasting must be taken into account the same way it was done for
+    addition
     """
 
     data = t1.data * t2.data
@@ -257,7 +260,8 @@ def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
 
 def _sum(tensor: Tensor, axis=None) -> Tensor:
     """
-    Sum a tensor along given axis. The gradient function is simply the identity function.
+    Sum a tensor along given axis. The gradient function is simply the identity
+    function.
     """
     data = tensor.data.sum(axis)
     requires_grad = tensor.requires_grad
@@ -301,11 +305,11 @@ def sum_out_broadcasted_dims(
     grad: np.ndarray, tensor_shape: tuple
 ) -> np.ndarray:
     """ Handle Broadcasting:
-    1. If t1 is shape(N,) and grad is shape (M, K, N), then the grad of t3 with respect to t1
-    should be summed across the added dimensions.
-    2. If t1 has any dimensions with a single entry, eg. (N, 1, K), then that dimension will also
-    have been broadcasted if the same deimension is >1 for t2. Thus, the gradient needs to be summed
-    across this dimension as well.
+    1. If t1 is shape(N,) and grad is shape (M, K, N), then the grad of t3 with
+    respect to t1 should be summed across the added dimensions.
+    2. If t1 has any dimensions with a single entry, eg. (N, 1, K), then that
+    dimension will also have been broadcasted if the same deimension is >1 for
+    t2. Thus, the gradient needs to be summed across this dimension as well.
     """
     # Sum across added dimensions (Step 1)
     added_dims = grad.ndim - len(tensor_shape)

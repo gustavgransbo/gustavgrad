@@ -1,5 +1,5 @@
-""" 
-Example of how to learn the XOR function using the autograd library 
+"""
+Example of how to learn the XOR function using the autograd library
 (This time with binary cross entropy loss)
 """
 

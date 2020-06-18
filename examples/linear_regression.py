@@ -1,5 +1,6 @@
 """
-Example of how a multivariate linear regression problem can be solved with the package.
+Example of how a multivariate linear regression problem can be solved with the
+package.
 """
 
 import numpy as np
