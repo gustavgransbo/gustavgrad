@@ -4,6 +4,7 @@ Tensor Class and affiliated functions
 from typing import List, NamedTuple, Callable, Optional, Union, Tuple
 import numpy as np
 
+
 class Dependency(NamedTuple):
     """
     A dependency consists of a tensor and a gradient function.
@@ -12,24 +13,32 @@ class Dependency(NamedTuple):
     If we have a gradient dJ/dt2, we can now calculate the gradient of t1 as:
     dJ/dt1 = df/dt1*dt2/dtf*dJ/dt2
     """
-    tensor : 'Tensor'
+
+    tensor: "Tensor"
     grad_fn: Callable[[np.ndarray], np.ndarray]
+
 
 # Types that can be converted to an ndarray
 Arrayable = Union[np.ndarray, list, float]
+
+
 def ensure_array(data: Arrayable) -> np.ndarray:
     if isinstance(data, np.ndarray):
         return data
     else:
         return np.asarray(data)
 
+
 # Types that can be converted to a tensor
-Tensorable = Union['Tensor', np.ndarray, float]
-def ensure_tensor(data: Tensorable) -> 'Tensor':
+Tensorable = Union["Tensor", np.ndarray, float]
+
+
+def ensure_tensor(data: Tensorable) -> "Tensor":
     if isinstance(data, Tensor):
         return data
     else:
         return Tensor(data)
+
 
 class Tensor:
     """
@@ -39,16 +48,18 @@ class Tensor:
     For example, if t3 = t1 + t2, then the tensor t3 depends on t1 and t2.
     """
 
-    def __init__(self, 
-                data: Arrayable, 
-                requires_grad: bool = False, 
-                depends_on: List[Dependency] = []) -> None:
-        
+    def __init__(
+        self,
+        data: Arrayable,
+        requires_grad: bool = False,
+        depends_on: List[Dependency] = [],
+    ) -> None:
+
         # Private, see self.data() property for explanation TODO: Perhaps cast to float?
         self._data = ensure_array(data)
         self.requires_grad = requires_grad
         self.depends_on = depends_on
-        self.grad : Optional['Tensor'] = None
+        self.grad: Optional["Tensor"] = None
         self.shape: tuple = self._data.shape
 
         if self.requires_grad:
@@ -76,7 +87,7 @@ class Tensor:
 
         if grad is None:
             if self.shape == ():
-                grad = np.asarray(1.)
+                grad = np.asarray(1.0)
             else:
                 raise RuntimeError("Must specify gradient for non-zero Tensor")
 
@@ -85,47 +96,49 @@ class Tensor:
         for tensor, grad_fn in self.depends_on:
             tensor.backward(grad_fn(grad))
 
-    def __add__(self, other: Tensorable) -> 'Tensor':
+    def __add__(self, other: Tensorable) -> "Tensor":
         return _add(self, ensure_tensor(other))
 
-    def __radd__(self, other: Tensorable) -> 'Tensor':
+    def __radd__(self, other: Tensorable) -> "Tensor":
         return _add(ensure_tensor(other), self)
 
-    def __iadd__(self, other: Tensorable) -> 'Tensor':
+    def __iadd__(self, other: Tensorable) -> "Tensor":
         self.data += ensure_tensor(other).data
         return self
 
-    def __sub__(self, other: Tensorable) -> 'Tensor':
+    def __sub__(self, other: Tensorable) -> "Tensor":
         return _sub(self, ensure_tensor(other))
 
-    def __rsub__(self, other: Tensorable) -> 'Tensor':
+    def __rsub__(self, other: Tensorable) -> "Tensor":
         return _sub(ensure_tensor(other), self)
 
-    def __isub__(self, other: Tensorable) -> 'Tensor':
+    def __isub__(self, other: Tensorable) -> "Tensor":
         self.data -= ensure_tensor(other).data
         return self
 
-    def __mul__(self, other: Tensorable) -> 'Tensor':
+    def __mul__(self, other: Tensorable) -> "Tensor":
         return _mul(self, ensure_tensor(other))
 
-    def __rmul__(self, other: Tensorable) -> 'Tensor':
+    def __rmul__(self, other: Tensorable) -> "Tensor":
         return _mul(ensure_tensor(other), self)
 
-    def __imul__(self, other: Tensorable) -> 'Tensor':
+    def __imul__(self, other: Tensorable) -> "Tensor":
         self.data *= ensure_tensor(other).data
         return self
 
-    def __matmul__(self, other: 'Tensor') -> 'Tensor':
+    def __matmul__(self, other: "Tensor") -> "Tensor":
         return _matmul(self, other)
 
-    def __getitem__(self, idxs) -> 'Tensor':
+    def __getitem__(self, idxs) -> "Tensor":
         return _slice(self, idxs)
 
-    def sum(self, axis=None) -> 'Tensor':
+    def sum(self, axis=None) -> "Tensor":
         return _sum(self, axis)
 
 
 """ Functions on tensors """
+
+
 def _add(t1: Tensor, t2: Tensor) -> Tensor:
     """ Adds two tensors
 
@@ -139,17 +152,21 @@ def _add(t1: Tensor, t2: Tensor) -> Tensor:
     depends_on = []
 
     if t1.requires_grad:
+
         def grad_fn1(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t1.shape)
 
         depends_on.append(Dependency(t1, grad_fn1))
 
     if t2.requires_grad:
+
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t2.shape)
+
         depends_on.append(Dependency(t2, grad_fn2))
-    
+
     return Tensor(data, requires_grad, depends_on)
+
 
 def _sub(t1: Tensor, t2: Tensor) -> Tensor:
     """ SUbtracts tensor t2 from tensor t1
@@ -160,18 +177,22 @@ def _sub(t1: Tensor, t2: Tensor) -> Tensor:
     depends_on = []
 
     if t1.requires_grad:
+
         def grad_fn1(grad: np.ndarray) -> np.ndarray:
             return sum_out_broadcasted_dims(grad, t1.shape)
 
         depends_on.append(Dependency(t1, grad_fn1))
 
     if t2.requires_grad:
+
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             """ When backpropagating to t2, inverse the gradient. """
             return sum_out_broadcasted_dims(-grad, t2.shape)
+
         depends_on.append(Dependency(t2, grad_fn2))
-    
+
     return Tensor(data, requires_grad, depends_on)
+
 
 def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     """ Multiplies two tensors element-wise.
@@ -187,18 +208,23 @@ def _mul(t1: Tensor, t2: Tensor) -> Tensor:
     depends_on = []
 
     if t1.requires_grad:
+
         def grad_fn1(grad: np.ndarray) -> np.ndarray:
             grad = grad * t2.data
             return sum_out_broadcasted_dims(grad, t1.shape)
+
         depends_on.append(Dependency(t1, grad_fn1))
-    
+
     if t2.requires_grad:
+
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
             grad = grad * t1.data
             return sum_out_broadcasted_dims(grad, t2.shape)
+
         depends_on.append(Dependency(t2, grad_fn2))
-    
+
     return Tensor(data, requires_grad, depends_on)
+
 
 def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
     """ Matrix-multiplies two tensors element-wise.
@@ -208,21 +234,26 @@ def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
     t3: (N,M)
     """
 
-    data = t1.data @ t2.data # (N,M)
+    data = t1.data @ t2.data  # (N,M)
     requires_grad = t1.requires_grad or t2.requires_grad
     depends_on = []
 
     if t1.requires_grad:
+
         def grad_fn1(grad: np.ndarray) -> np.ndarray:
-            return grad @ t2.data.T # (N,K)
+            return grad @ t2.data.T  # (N,K)
+
         depends_on.append(Dependency(t1, grad_fn1))
-    
+
     if t2.requires_grad:
+
         def grad_fn2(grad: np.ndarray) -> np.ndarray:
-            return t1.data.T @ grad # (K,M)
+            return t1.data.T @ grad  # (K,M)
+
         depends_on.append(Dependency(t2, grad_fn2))
-    
+
     return Tensor(data, requires_grad, depends_on)
+
 
 def _sum(tensor: Tensor, axis=None) -> Tensor:
     """
@@ -232,31 +263,43 @@ def _sum(tensor: Tensor, axis=None) -> Tensor:
     requires_grad = tensor.requires_grad
     depends_on = []
     if requires_grad:
+
         def grad_fn(grad: np.ndarray) -> np.ndarray:
             if axis is not None:
                 # Expand the summed axis to enable correct broadcasting
                 grad = np.expand_dims(grad, axis)
             return grad * np.ones_like(tensor.data)
+
         depends_on.append(Dependency(tensor, grad_fn))
-    
+
     return Tensor(data, requires_grad, depends_on)
 
-def _slice(tensor: Tensor, idxs) -> Tensor: 
+
+def _slice(tensor: Tensor, idxs) -> Tensor:
     """ Slices a tensor using numpy slicing logic"""
     data = tensor.data[idxs]
     requires_grad = tensor.requires_grad
     depends_on = []
     if requires_grad:
-        def grad_fn(grad : np.ndarray) -> np.ndarray:
+
+        def grad_fn(grad: np.ndarray) -> np.ndarray:
             new_grad = np.zeros_like(tensor.data)
-            new_grad[idxs] = grad #pylint: disable=unsupported-assignment-operation
+            new_grad[
+                idxs
+            ] = grad  # pylint: disable=unsupported-assignment-operation
             return new_grad
+
         depends_on.append(Dependency(tensor, grad_fn))
 
     return Tensor(data, requires_grad, depends_on)
 
+
 """ Helper Functions """
-def sum_out_broadcasted_dims(grad: np.ndarray, tensor_shape: tuple) -> np.ndarray:
+
+
+def sum_out_broadcasted_dims(
+    grad: np.ndarray, tensor_shape: tuple
+) -> np.ndarray:
     """ Handle Broadcasting:
     1. If t1 is shape(N,) and grad is shape (M, K, N), then the grad of t3 with respect to t1
     should be summed across the added dimensions.

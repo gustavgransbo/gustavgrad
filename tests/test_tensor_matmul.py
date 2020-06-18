@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 from autograd import Tensor
 
+
 class TestTensorMatMul(unittest.TestCase):
     def test_simple_matmul(self) -> None:
         t1 = Tensor([[1, 2, 3], [4, 5, 6]], requires_grad=True)
@@ -12,10 +13,17 @@ class TestTensorMatMul(unittest.TestCase):
 
         assert t3.data.tolist() == [[22, 28], [49, 64]]
 
-        t3.backward(np.asarray([[1., 2.], [3., 4.]]))
+        t3.backward(np.asarray([[1.0, 2.0], [3.0, 4.0]]))
 
-        assert t1.grad.tolist() == [[(1.+4.), (3.+8.), (5.+12.)], [(3.+8.), (9.+16.), (15.+24.)]]
-        assert t2.grad.tolist() == [[(1.+12.), (2.+16.)], [(2.+15.), (4.+20.)], [(3.+18.), (6.+24.)]]
+        assert t1.grad.tolist() == [
+            [(1.0 + 4.0), (3.0 + 8.0), (5.0 + 12.0)],
+            [(3.0 + 8.0), (9.0 + 16.0), (15.0 + 24.0)],
+        ]
+        assert t2.grad.tolist() == [
+            [(1.0 + 12.0), (2.0 + 16.0)],
+            [(2.0 + 15.0), (4.0 + 20.0)],
+            [(3.0 + 18.0), (6.0 + 24.0)],
+        ]
 
     def test_chained_mul_shape(self) -> None:
         t1 = Tensor(np.ones(shape=(2, 4)), requires_grad=True)

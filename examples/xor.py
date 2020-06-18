@@ -8,23 +8,15 @@ from autograd.functions import tanh
 from autograd.loss import SquaredErrorLoss
 import numpy as np
 
-X = Tensor([
-    [0, 0],
-    [0, 1],
-    [1, 0],
-    [1, 1]
-])
+X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 
 # one-hot encoded labels
-y = Tensor([
-    [1, 0],
-    [0, 1],
-    [1, 0],
-    [1, 0]
-])
+y = Tensor([[1, 0], [0, 1], [1, 0], [1, 0]])
+
 
 class Model:
     """ A multi layer perceptron that should learn the XOR function """
+
     def __init__(self) -> None:
         self.layer1 = Tensor(np.random.randn(2, 4), requires_grad=True)
         self.bias1 = Tensor(np.random.randn(4), requires_grad=True)
@@ -32,9 +24,9 @@ class Model:
         self.bias2 = Tensor(np.random.randn(2), requires_grad=True)
 
     def predict(self, x: Tensor) -> Tensor:
-        x = x@self.layer1 + self.bias1
+        x = x @ self.layer1 + self.bias1
         x = tanh(x)
-        x = x@self.layer2 + self.bias2
+        x = x @ self.layer2 + self.bias2
         return x
 
     def zero_grad(self) -> None:
@@ -48,6 +40,7 @@ class Model:
         self.layer2 -= self.layer2.grad * lr
         self.bias1 -= self.bias1.grad * lr
         self.bias2 -= self.bias2.grad * lr
+
 
 epochs = 1000
 lr = 0.01
@@ -63,9 +56,7 @@ for _ in range(epochs):
     loss.backward()
 
     mlp.sgd_step(lr)
-    
+
     print(loss.data)
 
 print(pred.data)
-
-        

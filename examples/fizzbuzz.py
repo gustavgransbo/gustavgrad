@@ -29,22 +29,26 @@ def binary_encode(x: int) -> List[int]:
     """ Binary encode x using 10 binary digits"""
     return [x >> i & 1 for i in range(10)]
 
+
 def fizz_buzz_encode(x: int) -> List[int]:
     """ One-hot encode an integer according to it's FizzBuzz class """
     if x % 15 == 0:
-        return [0,0,0,1]
+        return [0, 0, 0, 1]
     elif x % 5 == 0:
-        return [0,0,1,0]
+        return [0, 0, 1, 0]
     elif x % 3 == 0:
-        return [0,1,0,0]
+        return [0, 1, 0, 0]
     else:
-        return [1,0,0,0]
+        return [1, 0, 0, 0]
+
 
 X_train = Tensor(np.asarray([binary_encode(x) for x in range(101, 1024)]))
 y_train = Tensor(np.asarray([fizz_buzz_encode(x) for x in range(101, 1024)]))
 
+
 class Model(Module):
     """ A multi layer perceptron that should learn FizzBuzz function """
+
     def __init__(self, num_hidden: int = 100) -> None:
         self.layer1 = Parameter(10, 100)
         self.bias1 = Parameter(num_hidden)
@@ -52,9 +56,9 @@ class Model(Module):
         self.bias2 = Parameter(4)
 
     def predict(self, x: Tensor) -> Tensor:
-        x = x@self.layer1 + self.bias1
+        x = x @ self.layer1 + self.bias1
         x = tanh(x)
-        x = x@self.layer2 + self.bias2
+        x = x @ self.layer2 + self.bias2
         return x
 
 
@@ -71,8 +75,8 @@ for _ in tqdm(range(epochs)):
 
     for start in range(0, X_train.shape[0], batch_size):
 
-        X = X_train[idx[start:start+batch_size]]
-        y = y_train[idx[start:start+batch_size]]
+        X = X_train[idx[start : start + batch_size]]
+        y = y_train[idx[start : start + batch_size]]
 
         mlp.zero_grad()
 
@@ -81,16 +85,16 @@ for _ in tqdm(range(epochs)):
         loss.backward()
 
         optimizer.step(mlp)
-        
+
     np.random.shuffle(idx)
 
 # Includes 0, even though we wont actually evaluate on 0
 X_test = Tensor([binary_encode(x) for x in range(0, 101)])
-y_test = Tensor([fizz_buzz_encode(x) for x in range(0, 101)]) 
+y_test = Tensor([fizz_buzz_encode(x) for x in range(0, 101)])
 
 correct = 0
 for i in range(1, 101):
-    labels = [i, 'Fizz', 'Buzz', 'FizzBuzz']
+    labels = [i, "Fizz", "Buzz", "FizzBuzz"]
     pred = mlp.predict(X_test[i])
     pred_idx = pred.data.argmax()
 

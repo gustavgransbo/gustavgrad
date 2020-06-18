@@ -9,13 +9,13 @@ from autograd import Tensor
 x = Tensor(np.random.rand(100, 3))
 
 # The function we want to learn
-coefs = Tensor(np.asarray([1., 3., 5.]))
+coefs = Tensor(np.asarray([1.0, 3.0, 5.0]))
 bias = 2
 y = x @ coefs + bias
 
 # Our model
 w = Tensor(np.random.randn(3), requires_grad=True)
-b = Tensor(np.random.rand(), requires_grad = True)
+b = Tensor(np.random.rand(), requires_grad=True)
 
 # Train the model
 lr = 0.001
@@ -29,9 +29,9 @@ for _ in range(1000):
     for start in range(0, x.shape[0], batch_size):
         w.zero_grad(), b.zero_grad()
 
-        batch_idx = idx[start : start+batch_size]
+        batch_idx = idx[start : start + batch_size]
         pred = x[batch_idx] @ w + b
-        errors = (y[batch_idx] - pred)
+        errors = y[batch_idx] - pred
         mse_loss = (errors * errors).sum()
         mse_loss.backward()
 
