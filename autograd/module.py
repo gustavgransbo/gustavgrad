@@ -1,5 +1,5 @@
-from typing import Iterator
 import inspect
+from typing import Iterator
 
 import numpy as np
 

@@ -1,8 +1,9 @@
 """ Loss functions"""
 
-from autograd.tensor import Tensor, Tensorable, Dependency, ensure_tensor
-from autograd.functions import _sigmoid
 import numpy as np
+
+from autograd.functions import _sigmoid
+from autograd.tensor import Dependency, Tensor, Tensorable, ensure_tensor
 
 
 class Loss:

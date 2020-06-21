@@ -1,7 +1,8 @@
 """
 Tensor Class and affiliated functions
 """
-from typing import List, NamedTuple, Callable, Optional, Union
+from typing import Callable, List, NamedTuple, Optional, Union
+
 import numpy as np
 
 
