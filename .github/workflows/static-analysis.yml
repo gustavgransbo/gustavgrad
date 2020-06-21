@@ -1,7 +1,7 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# This workflow will perform static code analysis using flake8, mypy, black and
+# isort.
 
-name: Python package
+name: Static analysis
 
 on:
   push:
@@ -13,28 +13,35 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.x
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.x'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip install flake8 mypy black isort
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Check import format using isort
+      run: |
+        # Check imports are correctly formated
+        isort -c
+    - name: Check formating with black
+      run: |
+        # Check formatting with black
+        black --line-length 79 --check .
+    - name: Type check with mypy
+      run: |
+        # Type check the autograd package, not tests, examples etc. 
+        mypy --ignore-missing-imports autograd
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 --ignore E203,W503 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+
+  
