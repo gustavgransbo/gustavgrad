@@ -13,17 +13,17 @@ binary-encodings of numbers as input, and outputing a one-hot encoded label
 corresponding to the four classes. Training is done on the numbers 100-1023.
 """
 
-from typing import List
 import time
+from typing import List
+
+import numpy as np
+from tqdm import tqdm
 
 from autograd import Tensor
 from autograd.functions import tanh
 from autograd.loss import LogitBinaryCrossEntropy
 from autograd.module import Module, Parameter
 from autograd.optim import SGD
-
-import numpy as np
-from tqdm import tqdm
 
 
 def binary_encode(x: int) -> List[int]:

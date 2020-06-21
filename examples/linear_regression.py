@@ -4,6 +4,7 @@ package.
 """
 
 import numpy as np
+
 from autograd import Tensor
 
 # 100 training examples with 3 features

@@ -1,7 +1,8 @@
 """
 Tensor Class and affiliated functions
 """
-from typing import List, NamedTuple, Callable, Optional, Union
+from typing import Callable, List, NamedTuple, Optional, TypeVar, Union
+
 import numpy as np
 
 
@@ -38,6 +39,9 @@ def ensure_tensor(data: Tensorable) -> "Tensor":
         return data
     else:
         return Tensor(data)
+
+
+_TensorType = TypeVar("_TensorType", bound="Tensor")
 
 
 class Tensor:
@@ -104,7 +108,7 @@ class Tensor:
     def __radd__(self, other: Tensorable) -> "Tensor":
         return _add(ensure_tensor(other), self)
 
-    def __iadd__(self, other: Tensorable) -> "Tensor":
+    def __iadd__(self: _TensorType, other: Tensorable) -> _TensorType:
         self.data += ensure_tensor(other).data
         return self
 
@@ -114,7 +118,7 @@ class Tensor:
     def __rsub__(self, other: Tensorable) -> "Tensor":
         return _sub(ensure_tensor(other), self)
 
-    def __isub__(self, other: Tensorable) -> "Tensor":
+    def __isub__(self: _TensorType, other: Tensorable) -> _TensorType:
         self.data -= ensure_tensor(other).data
         return self
 
@@ -124,7 +128,7 @@ class Tensor:
     def __rmul__(self, other: Tensorable) -> "Tensor":
         return _mul(ensure_tensor(other), self)
 
-    def __imul__(self, other: Tensorable) -> "Tensor":
+    def __imul__(self: _TensorType, other: Tensorable) -> _TensorType:
         self.data *= ensure_tensor(other).data
         return self
 

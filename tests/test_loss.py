@@ -1,8 +1,10 @@
+import math
 import unittest
+
 import numpy as np
+
 from autograd import Tensor
 from autograd.loss import LogitBinaryCrossEntropy, SquaredErrorLoss
-import math
 
 
 class TestLoss(unittest.TestCase):
