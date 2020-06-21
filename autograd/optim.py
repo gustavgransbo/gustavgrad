@@ -6,7 +6,7 @@ from autograd.module import Module
 class SGD:
     " Stochastic Gradient Descent Optimizer"
 
-    def __init__(self, lr=0.001) -> None:
+    def __init__(self, lr: float = 0.001) -> None:
         self.lr = lr
 
     def step(self, module: Module) -> None:
