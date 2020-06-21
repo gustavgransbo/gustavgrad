@@ -11,5 +11,5 @@ class SGD:
 
     def step(self, module: Module) -> None:
         for parameter in module.parameters():
-            # FIXME: Figure out typing of inherited __isub__
-            parameter -= parameter.grad * self.lr
+            if parameter.grad is not None:
+                parameter -= parameter.grad * self.lr
