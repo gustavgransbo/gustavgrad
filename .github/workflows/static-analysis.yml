@@ -16,32 +16,50 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Set up Python 3.x
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install dependencies
+    
+    - name: Install Poetry
+      uses: dschep/install-poetry-action@v1.2
+
+    - name: Cache Poetry virtualenv
+      uses: actions/cache@v1
+      id: cache
+      with:
+        path: ~/.virtualenvs
+        key: poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Set Poetry config
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 mypy black isort
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        poetry config virtualenvs.in-project false
+        poetry config virtualenvs.path ~/.virtualenvs
+
+    - name: Install Dependencies
+      run: poetry install
+      if: steps.cache.outputs.cache-hit != 'true'
+
     - name: Check import format using isort
       run: |
         # Check imports are correctly formated
-        isort -c
+        poetry run isort -c
     - name: Check formating with black
       run: |
         # Check formatting with black
-        black --line-length 79 --check .
+        poetry run black --line-length 79 --check .
     - name: Type check with mypy
       run: |
         # Type check the autograd package, not tests, examples etc. 
-        mypy --ignore-missing-imports autograd
+        poetry run mypy --ignore-missing-imports autograd
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 --ignore E203,W503 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        poetry run flake8 --ignore E203,W503 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   
