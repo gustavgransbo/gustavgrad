@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from autograd import Tensor
-from autograd.module import Module, Parameter
+from gustavgrad import Tensor
+from gustavgrad.module import Module, Parameter
 
 
 class TestModule(unittest.TestCase):

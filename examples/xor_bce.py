@@ -1,10 +1,10 @@
-""" Example of how to learn the XOR function using the autograd library """
+""" Example of how to learn the XOR function using the gustavgrad library """
 
 import numpy as np
 
-from autograd import Tensor
-from autograd.functions import _sigmoid, tanh
-from autograd.loss import LogitBinaryCrossEntropy
+from gustavgrad import Tensor
+from gustavgrad.functions import _sigmoid, tanh
+from gustavgrad.loss import LogitBinaryCrossEntropy
 
 X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 

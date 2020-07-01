@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from autograd import Tensor
+from gustavgrad import Tensor
 
 
 class TestTensorSum(unittest.TestCase):

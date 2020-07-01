@@ -1,6 +1,6 @@
-" Optimizers for autograd Modules "
+" Optimizers for gustavgrad Modules "
 
-from autograd.module import Module
+from gustavgrad.module import Module
 
 
 class SGD:

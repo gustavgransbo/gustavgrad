@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "autograd"
+name = "gustavgrad"
 version = "0.1.0"
 description = ""
 authors = ["Gustav Gränsbo <gustav.gransbo@gmail.com>"]

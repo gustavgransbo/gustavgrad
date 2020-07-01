@@ -3,8 +3,8 @@ import unittest
 
 import numpy as np
 
-from autograd import Tensor
-from autograd.loss import LogitBinaryCrossEntropy, SquaredErrorLoss
+from gustavgrad import Tensor
+from gustavgrad.loss import LogitBinaryCrossEntropy, SquaredErrorLoss
 
 
 class TestLoss(unittest.TestCase):

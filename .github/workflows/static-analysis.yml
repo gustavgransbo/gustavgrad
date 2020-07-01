@@ -50,8 +50,8 @@ jobs:
         poetry run black --line-length 79 --check .
     - name: Type check with mypy
       run: |
-        # Type check the autograd package, not tests, examples etc. 
-        poetry run mypy --ignore-missing-imports autograd
+        # Type check the gustavgrad package, not tests, examples etc. 
+        poetry run mypy --ignore-missing-imports gustavgrad
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
