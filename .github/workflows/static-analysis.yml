@@ -47,7 +47,7 @@ jobs:
     - name: Check formating with black
       run: |
         # Check formatting with black
-        poetry run black --line-length 79 --check .
+        poetry run black --check .
     - name: Type check with mypy
       run: |
         # Type check the autograd package, not tests, examples etc. 
