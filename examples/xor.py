@@ -1,13 +1,13 @@
 """
-Example of how to learn the XOR function using the autograd library
+Example of how to learn the XOR function using the gustavgrad library
 (This time with binary cross entropy loss)
 """
 
 import numpy as np
 
-from autograd import Tensor
-from autograd.functions import tanh
-from autograd.loss import SquaredErrorLoss
+from gustavgrad import Tensor
+from gustavgrad.functions import tanh
+from gustavgrad.loss import SquaredErrorLoss
 
 X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 

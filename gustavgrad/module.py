@@ -3,7 +3,7 @@ from typing import Iterator
 
 import numpy as np
 
-from autograd.tensor import Tensor
+from gustavgrad.tensor import Tensor
 
 
 class Parameter(Tensor):

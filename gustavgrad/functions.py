@@ -1,7 +1,7 @@
 """ Activation functions """
 import numpy as np
 
-from autograd.tensor import Dependency, Tensor
+from gustavgrad.tensor import Dependency, Tensor
 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:

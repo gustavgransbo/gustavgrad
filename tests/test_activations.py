@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from autograd import Tensor
-from autograd.functions import sigmoid, tanh
+from gustavgrad import Tensor
+from gustavgrad.functions import sigmoid, tanh
 
 
 class TestActivation(unittest.TestCase):

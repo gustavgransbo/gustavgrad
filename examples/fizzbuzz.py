@@ -1,5 +1,5 @@
 """
-Since this autograd project was inspired by Joel Grus, it feels only right that
+Since this project was inspired by Joel Grus, it feels only right that
 I use it to solve his go-to problem: FizzBuzz
 
 The FizzBuzz problem tasks a prospective software engineer to develop a program
@@ -19,11 +19,11 @@ from typing import List
 import numpy as np
 from tqdm import tqdm
 
-from autograd import Tensor
-from autograd.functions import tanh
-from autograd.loss import LogitBinaryCrossEntropy
-from autograd.module import Module, Parameter
-from autograd.optim import SGD
+from gustavgrad import Tensor
+from gustavgrad.functions import tanh
+from gustavgrad.loss import LogitBinaryCrossEntropy
+from gustavgrad.module import Module, Parameter
+from gustavgrad.optim import SGD
 
 
 def binary_encode(x: int) -> List[int]:

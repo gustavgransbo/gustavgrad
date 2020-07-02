@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from autograd.functions import _sigmoid
-from autograd.tensor import Dependency, Tensor, Tensorable, ensure_tensor
+from gustavgrad.functions import _sigmoid
+from gustavgrad.tensor import Dependency, Tensor, Tensorable, ensure_tensor
 
 
 class Loss:

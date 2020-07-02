@@ -5,7 +5,7 @@ package.
 
 import numpy as np
 
-from autograd import Tensor
+from gustavgrad import Tensor
 
 # 100 training examples with 3 features
 x = Tensor(np.random.rand(100, 3))
