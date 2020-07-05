@@ -5,7 +5,7 @@ description = ""
 authors = ["Gustav Gränsbo <gustav.gransbo@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 numpy = "^1.19.0"
 
 [tool.poetry.dev-dependencies]
