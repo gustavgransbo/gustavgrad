@@ -10,6 +10,8 @@ on:
 
 jobs:
   Test:
+    name: ${{ matrix.session }} (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
@@ -19,7 +21,6 @@ jobs:
           - { python-version: 3.7, os: windows-latest, session: "tests" }
           - { python-version: 3.8, os: ubuntu-latest, session: "lint" }
           - { python-version: 3.8, os: ubuntu-latest, session: "mypy" }
-    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
