@@ -43,10 +43,6 @@ jobs:
       run: |
         # Check imports are correctly formated
         poetry run isort -c
-    - name: Check formating with black
-      run: |
-        # Check formatting with black
-        poetry run black --check .
     - name: Type check with mypy
       run: |
         # Type check the gustavgrad package, not tests, examples etc. 
