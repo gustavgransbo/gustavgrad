@@ -56,8 +56,11 @@ class Tensor:
         self,
         data: Arrayable,
         requires_grad: bool = False,
-        depends_on: List[Dependency] = [],
+        depends_on: List[Dependency] = None,
     ) -> None:
+
+        if depends_on is None:
+            depends_on = []
 
         # Private, see self.data() property for explanation
         # TODO: Perhaps cast to float?
