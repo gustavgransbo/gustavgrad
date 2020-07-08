@@ -1,0 +1,36 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install Poetry
+      uses: dschep/install-poetry-action@v1.2
+
+    - name: Cache Nox virtualenv
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: .nox
+        key: gustavgrad-nox-venv-coverage-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Set up Nox
+      uses: excitedleigh/setup-nox@1.0.0
+
+    - name: Upload coverage to Codecov
+      run: nox --sessions tests-3.8 codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
