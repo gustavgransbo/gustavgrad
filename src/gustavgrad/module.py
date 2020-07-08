@@ -24,6 +24,6 @@ class Module:
             elif isinstance(value, Module):
                 yield from value.parameters()
 
-    def zero_grad(self):
+    def zero_grad(self) -> None:
         for parameter in self.parameters():
             parameter.zero_grad()

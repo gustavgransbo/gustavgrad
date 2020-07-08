@@ -1,7 +1,16 @@
 """
 Tensor Class and affiliated functions
 """
-from typing import Callable, List, NamedTuple, Optional, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 
@@ -138,10 +147,12 @@ class Tensor:
     def __matmul__(self, other: "Tensor") -> "Tensor":
         return _matmul(self, other)
 
-    def __getitem__(self, idxs) -> "Tensor":
+    def __getitem__(self, idxs: Any) -> "Tensor":
         return _slice(self, idxs)
 
-    def sum(self, axis=None) -> "Tensor":
+    def sum(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None
+    ) -> "Tensor":
         return _sum(self, axis)
 
 
@@ -265,7 +276,9 @@ def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def _sum(tensor: Tensor, axis=None) -> Tensor:
+def _sum(
+    tensor: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None
+) -> Tensor:
     """
     Sum a tensor along given axis. The gradient function is simply the identity
     function.
@@ -286,7 +299,7 @@ def _sum(tensor: Tensor, axis=None) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 
-def _slice(tensor: Tensor, idxs) -> Tensor:
+def _slice(tensor: Tensor, idxs: Any) -> Tensor:
     """ Slices a tensor using numpy slicing logic"""
     data = tensor.data[idxs]
     requires_grad = tensor.requires_grad
