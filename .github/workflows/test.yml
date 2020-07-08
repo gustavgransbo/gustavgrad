@@ -12,8 +12,13 @@ jobs:
   Test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: [3.7, 3.8]
+        include:
+          - { python-version: 3.8, os: ubuntu-latest, session: "tests" }
+          - { python-version: 3.7, os: ubuntu-latest, session: "tests" }
+          - { python-version: 3.8, os: windows-latest, session: "tests" }
+          - { python-version: 3.7, os: windows-latest, session: "tests" }
+          - { python-version: 3.8, os: ubuntu-latest, session: "lint" }
+          - { python-version: 3.8, os: ubuntu-latest, session: "mypy" }
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -26,18 +31,18 @@ jobs:
     - name: Install Poetry
       uses: dschep/install-poetry-action@v1.2
 
-    - name: Cache nox virtualenv
-      # poetry install failes on windows when the nox virtual environment was 
+    - name: Cache Nox virtualenv
+      # poetry install fails on windows when the Nox virtual environment was
       # fetched from cache.
       if: matrix.os != 'windows-latest'
       uses: actions/cache@v2
       id: cache
       with:
         path: .nox
-        key: gustavgrad-nox-venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: gustavgrad-nox-venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.session }}-${{ hashFiles('**/poetry.lock') }}
 
-    - name: Set up nox
+    - name: Set up Nox
       uses: excitedleigh/setup-nox@1.0.0
 
-    - name: Test with nox
-      run: nox --session tests-${{ matrix.python-version }}
+    - name: Run Nox
+      run: nox --session ${{ matrix.session }}-${{ matrix.python-version }}
