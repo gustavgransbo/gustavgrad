@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Lint:
 
     runs-on: ubuntu-latest
 
@@ -39,10 +39,6 @@ jobs:
     - name: Install Dependencies
       run: poetry install
 
-    - name: Check import format using isort
-      run: |
-        # Check imports are correctly formated
-        poetry run isort -c
     - name: Type check with mypy
       run: |
         # Type check the gustavgrad package, not tests, examples etc. 
