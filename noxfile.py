@@ -1,6 +1,7 @@
 import nox
 
 nox.options.reuse_existing_virtualenvs = True
+nox.options.sessions = ["tests", "mypy", "lint"]
 
 
 @nox.session(python=["3.7", "3.8"])
