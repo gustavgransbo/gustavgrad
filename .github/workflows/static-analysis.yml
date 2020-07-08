@@ -42,7 +42,7 @@ jobs:
     - name: Type check with mypy
       run: |
         # Type check the gustavgrad package, not tests, examples etc. 
-        poetry run mypy --ignore-missing-imports src
+        poetry run mypy src
 
     - name: Lint with flake8
       run: |
