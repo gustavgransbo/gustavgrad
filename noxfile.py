@@ -25,3 +25,11 @@ def mypy(session):
     args = session.posargs or ["src"]
     session.run("poetry", "install", external=True)
     session.run("mypy", *args)
+
+
+@nox.session(python="3.8")
+def codecov(session):
+    """ Upload coverage data to Codecov"""
+    session.run("poetry", "install", external=True)
+    session.run("coverage", "xml")
+    session.run("codecov", *session.posargs)
