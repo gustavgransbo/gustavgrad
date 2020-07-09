@@ -83,7 +83,11 @@ class Tensor:
             self.zero_grad()
 
     def __repr__(self) -> str:
-        return f"Tensor(data={self.data}, requires_grad={self.requires_grad})"
+        return (
+            "Tensor(data="
+            + ("\n" if self.data.ndim > 1 else "")
+            + f"{self.data}, requires_grad={self.requires_grad})"
+        )
 
     @property
     def data(self) -> np.ndarray:
