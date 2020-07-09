@@ -138,8 +138,3 @@ class TestTensorAdd(unittest.TestCase):
         assert t1.grad.tolist() == [1.0, 1.0, 1.0]
         assert t2.grad.tolist() == [1.0, 1.0, 1.0]
         assert t3.grad.tolist() == [1.0, 1.0, 1.0]
-
-
-if __name__ == "__main__":
-    """For debugging"""
-    TestTensorAdd().test_simple_add()

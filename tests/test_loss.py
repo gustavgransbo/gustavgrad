@@ -68,7 +68,3 @@ class TestLoss(unittest.TestCase):
         np.testing.assert_array_almost_equal(
             predictions.grad, [0, -2, -4, -6, -8]
         )
-
-
-if __name__ == "__main__":
-    TestLoss().test_binary_cross_entropy_with_logits_correct()
