@@ -11,6 +11,7 @@ class TestTensorSum(unittest.TestCase):
 
         t2 = t1.sum()
         assert t2.data.tolist() == 6
+        assert t2.requires_grad
 
         t2.backward()
         assert t1.grad.tolist() == [1.0, 1.0, 1.0]
@@ -22,6 +23,13 @@ class TestTensorSum(unittest.TestCase):
 
         t2.backward(2)
         assert t1.grad.tolist() == [2.0, 2.0, 2.0]
+
+    def test_simple_sum_no_grad(self) -> None:
+        t1 = Tensor([1, 2, 3])
+
+        t2 = t1.sum()
+        assert t2.data.tolist() == 6
+        assert not t2.requires_grad
 
     def test_axis_sum(self) -> None:
         t1 = Tensor([[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]], requires_grad=True)

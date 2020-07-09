@@ -13,6 +13,7 @@ class TestTensorMatMul(unittest.TestCase):
         t3 = t1 @ t2
 
         assert t3.data.tolist() == [[22, 28], [49, 64]]
+        assert t3.requires_grad
 
         t3.backward(np.asarray([[1.0, 2.0], [3.0, 4.0]]))
 
@@ -25,6 +26,15 @@ class TestTensorMatMul(unittest.TestCase):
             [(2.0 + 15.0), (4.0 + 20.0)],
             [(3.0 + 18.0), (6.0 + 24.0)],
         ]
+
+    def test_simple_matmul_no_grad(self) -> None:
+        t1 = Tensor([[1, 2, 3], [4, 5, 6]])
+        t2 = Tensor([[1, 2], [3, 4], [5, 6]])
+
+        t3 = t1 @ t2
+
+        assert t3.data.tolist() == [[22, 28], [49, 64]]
+        assert not t3.requires_grad
 
     def test_chained_mul_shape(self) -> None:
         t1 = Tensor(np.ones(shape=(2, 4)), requires_grad=True)
