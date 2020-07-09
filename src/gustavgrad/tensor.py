@@ -97,6 +97,9 @@ class Tensor:
     def data(self, value: np.ndarray) -> None:
         """ Invalidate the gradient of the tensor if data is modified in-place
         """
+        if value.shape != self.shape:
+            raise RuntimeError("Cannot change shape of Tensor")
+
         self.grad = None
         self._data = value
 

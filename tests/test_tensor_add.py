@@ -13,11 +13,49 @@ class TestTensorAdd(unittest.TestCase):
         t3 = t1 + t2
 
         assert t3.data.tolist() == [5, 7, 9]
+        assert t3.requires_grad
 
         t3.backward(np.asarray([1.0, 1.0, 1.0]))
 
         assert t1.grad.tolist() == [1.0, 1.0, 1.0]
         assert t2.grad.tolist() == [1.0, 1.0, 1.0]
+
+    def test_simple_add_no_grad(self) -> None:
+        t1 = Tensor([1, 2, 3])
+        t2 = Tensor([4, 5, 6])
+
+        t3 = t1 + t2
+
+        assert t3.data.tolist() == [5, 7, 9]
+        assert not t3.requires_grad
+
+    def test_scalar_add(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = t1 + 1
+        assert t2.data.tolist() == [2, 3, 4]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [1.0, 1.0, 1.0]
+
+    def test_array_add(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = t1 + np.array([4, 5, 6])
+        assert t2.data.tolist() == [5, 7, 9]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [1.0, 1.0, 1.0]
+
+    def test_scalar_radd(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = 1 + t1
+        assert type(t2) is Tensor
+        assert t2.data.tolist() == [2, 3, 4]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [1.0, 1.0, 1.0]
 
     def test_broadcasted_add1(self) -> None:
         """ In this test t2 is broadcasted by adding a dimension and then
@@ -138,8 +176,3 @@ class TestTensorAdd(unittest.TestCase):
         assert t1.grad.tolist() == [1.0, 1.0, 1.0]
         assert t2.grad.tolist() == [1.0, 1.0, 1.0]
         assert t3.grad.tolist() == [1.0, 1.0, 1.0]
-
-
-if __name__ == "__main__":
-    """For debugging"""
-    TestTensorAdd().test_simple_add()

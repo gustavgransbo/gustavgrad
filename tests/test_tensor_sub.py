@@ -13,11 +13,49 @@ class TestTensorSub(unittest.TestCase):
         t3 = t1 - t2
 
         assert t3.data.tolist() == [-3, -3, -3]
+        assert t3.requires_grad
 
         t3.backward(np.asarray([1.0, 1.0, 1.0]))
 
         assert t1.grad.tolist() == [1.0, 1.0, 1.0]
         assert t2.grad.tolist() == [-1.0, -1.0, -1.0]
+
+    def test_simple_sub_no_grad(self) -> None:
+        t1 = Tensor([1, 2, 3])
+        t2 = Tensor([4, 5, 6])
+
+        t3 = t1 - t2
+
+        assert t3.data.tolist() == [-3, -3, -3]
+        assert not t3.requires_grad
+
+    def test_scalar_sub(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = t1 - 1
+        assert t2.data.tolist() == [0, 1, 2]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [1.0, 1.0, 1.0]
+
+    def test_array_sub(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = t1 - np.array([4, 5, 6])
+        assert t2.data.tolist() == [-3, -3, -3]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [1.0, 1.0, 1.0]
+
+    def test_scalar_rsub(self) -> None:
+        t1 = Tensor([1, 2, 3], requires_grad=True)
+
+        t2 = 1 - t1
+        assert type(t2) is Tensor
+        assert t2.data.tolist() == [0, -1, -2]
+
+        t2.backward(np.asarray([1.0, 1.0, 1.0]))
+        assert t1.grad.tolist() == [-1.0, -1.0, -1.0]
 
     def test_broadcasted_sub1(self) -> None:
         """ In this test t2 is broadcasted by adding a dimension and then
