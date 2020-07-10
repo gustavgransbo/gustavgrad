@@ -1,4 +1,5 @@
 """ Loss functions"""
+from abc import ABC, abstractmethod
 
 import numpy as np
 
@@ -6,7 +7,8 @@ from gustavgrad.function import _sigmoid
 from gustavgrad.tensor import Dependency, Tensor, Tensorable, ensure_tensor
 
 
-class Loss:
+class Loss(ABC):
+    @abstractmethod
     def loss(self, target: Tensorable, pred: Tensor) -> Tensor:
         raise NotImplementedError
 
