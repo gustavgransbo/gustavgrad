@@ -8,12 +8,8 @@ def _sigmoid(x: np.ndarray) -> np.ndarray:
     """ Stable sigmoid"""
     mask = x > 0
     res = np.zeros_like(x)
-    res[mask] = 1 / (
-        1 + np.exp(-x[mask])
-    )  # pylint: disable=unsupported-assignment-operation
-    res[~mask] = np.exp(x[~mask]) / (
-        1 + np.exp(x[~mask])
-    )  # pylint: disable=unsupported-assignment-operation
+    res[mask] = 1 / (1 + np.exp(-x[mask]))
+    res[~mask] = np.exp(x[~mask]) / (1 + np.exp(x[~mask]))
     return res
 
 
