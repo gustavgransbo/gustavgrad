@@ -8,12 +8,8 @@ def _sigmoid(x: np.ndarray) -> np.ndarray:
     """ Stable sigmoid"""
     mask = x > 0
     res = np.zeros_like(x)
-    res[mask] = 1 / (
-        1 + np.exp(-x[mask])
-    )  # pylint: disable=unsupported-assignment-operation
-    res[~mask] = np.exp(x[~mask]) / (
-        1 + np.exp(x[~mask])
-    )  # pylint: disable=unsupported-assignment-operation
+    res[mask] = 1 / (1 + np.exp(-x[mask]))
+    res[~mask] = np.exp(x[~mask]) / (1 + np.exp(x[~mask]))
     return res
 
 
@@ -50,11 +46,3 @@ def tanh(tensor: Tensor) -> Tensor:
         depends_on.append(Dependency(tensor, grad_fn))
 
     return Tensor(data, requires_grad, depends_on)
-
-
-def _softmax(x: np.ndarray) -> np.ndarray:
-    """ Computes the softmax over the last dimension of an ndarray"""
-
-    exps = np.exp(x - x.max())
-    row_wise_sums = exps.sum(-1, keepdims=True)
-    return x / row_wise_sums

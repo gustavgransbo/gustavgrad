@@ -1,11 +1,9 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 
 
-class TestTensorSlice(unittest.TestCase):
+class TestTensorSlice:
     def test_single_slice(self) -> None:
         t1 = Tensor(np.arange(9).reshape(3, 3), requires_grad=True)
 

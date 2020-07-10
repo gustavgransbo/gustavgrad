@@ -1,11 +1,9 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 
 
-class TestTensorMatMul(unittest.TestCase):
+class TestTensorMatMul:
     def test_simple_matmul(self) -> None:
         t1 = Tensor([[1, 2, 3], [4, 5, 6]], requires_grad=True)
         t2 = Tensor([[1, 2], [3, 4], [5, 6]], requires_grad=True)
