@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from gustavgrad.functions import _sigmoid
+from gustavgrad.function import _sigmoid
 from gustavgrad.tensor import Dependency, Tensor, Tensorable, ensure_tensor
 
 
