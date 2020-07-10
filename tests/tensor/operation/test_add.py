@@ -1,11 +1,9 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 
 
-class TestTensorAdd(unittest.TestCase):
+class TestTensorAdd:
     def test_simple_add(self) -> None:
         t1 = Tensor([1, 2, 3], requires_grad=True)
         t2 = Tensor([4, 5, 6], requires_grad=True)

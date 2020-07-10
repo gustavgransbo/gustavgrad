@@ -1,12 +1,10 @@
-import unittest
-
 import numpy as np
 import pytest
 
 from gustavgrad import Tensor
 
 
-class TestTensorRepr(unittest.TestCase):
+class TestTensorRepr:
     def test_1d_with_grad(self) -> None:
         tensor = Tensor([1, 2, 3], requires_grad=True)
 
@@ -27,7 +25,7 @@ class TestTensorRepr(unittest.TestCase):
         )
 
 
-class TestTensorBasics(unittest.TestCase):
+class TestTensorBasics:
     def test_init_scalar_data(self) -> None:
         tensor = Tensor(1)
 

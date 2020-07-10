@@ -1,12 +1,10 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 from gustavgrad.function import sigmoid, tanh
 
 
-class TestActivation(unittest.TestCase):
+class TestActivation:
     def test_sigmoid_shape(self) -> None:
         # TODO: Also test that the actual values of result and gradient are
         # correct

@@ -1,12 +1,10 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 from gustavgrad.module import Module, Parameter
 
 
-class TestModule(unittest.TestCase):
+class TestModule:
     class Model(Module):
         def __init__(self) -> None:
             self.layer1 = Parameter(2, 10)

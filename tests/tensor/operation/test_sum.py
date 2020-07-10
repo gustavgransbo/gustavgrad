@@ -1,11 +1,9 @@
-import unittest
-
 import numpy as np
 
 from gustavgrad import Tensor
 
 
-class TestTensorSum(unittest.TestCase):
+class TestTensorSum:
     def test_simple_sum(self) -> None:
         t1 = Tensor([1, 2, 3], requires_grad=True)
 

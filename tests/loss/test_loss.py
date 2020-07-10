@@ -1,5 +1,4 @@
 import math
-import unittest
 
 import numpy as np
 
@@ -7,7 +6,7 @@ from gustavgrad import Tensor
 from gustavgrad.loss import LogitBinaryCrossEntropy, SquaredErrorLoss
 
 
-class TestLoss(unittest.TestCase):
+class TestLoss:
     def test_binary_cross_entropy_with_logits_correct(self) -> None:
 
         targets = np.asarray([1.0, 1, 1, 1, 0, 0, 0])
