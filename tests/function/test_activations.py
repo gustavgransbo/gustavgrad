@@ -5,24 +5,39 @@ from gustavgrad.function import sigmoid, tanh
 
 
 class TestActivation:
-    def test_sigmoid_shape(self) -> None:
-        # TODO: Also test that the actual values of result and gradient are
-        # correct
-        np.random.seed(0)
-        t1 = Tensor(np.random.random(size=(3, 3, 3)), requires_grad=True)
+    def test_sigmoid(self) -> None:
+        t1 = Tensor(np.zeros(shape=(3, 3, 3)), requires_grad=True)
         t2 = sigmoid(t1)
 
         assert t2.shape == (3, 3, 3)
+        np.testing.assert_allclose(t2.data, 0.5)
 
-        t2.backward(np.ones(shape=(3, 3, 3)))
+        # TODO: Split into two tests
+        t2.backward(1)
+        np.testing.assert_allclose(t1.grad, 0.25)
 
-    def test_tanh_shape(self) -> None:
-        # TODO: Also test that the actual values of result and gradient are
-        # correct
+    def test_sigmoid_no_grad(self) -> None:
+        t1 = Tensor(np.zeros(shape=(3, 3, 3)), requires_grad=False)
+        t2 = sigmoid(t1)
+
+        assert t2.shape == (3, 3, 3)
+        assert not t2.requires_grad
+
+    def test_tanh(self) -> None:
         np.random.seed(0)
-        t1 = Tensor(np.random.random(size=(3, 3, 3)), requires_grad=True)
+        t1 = Tensor(np.ones(shape=(3, 3, 3)) * 1_000, requires_grad=True)
         t2 = tanh(t1)
 
         assert t2.shape == (3, 3, 3)
+        np.testing.assert_allclose(t2.data, 1)
 
-        t2.backward(np.ones(shape=(3, 3, 3)))
+        # TODO: Split into two tests
+        t2.backward(1)
+        np.testing.assert_allclose(t1.grad, 0)
+
+    def test_tanh_no_grad(self) -> None:
+        t1 = Tensor(np.zeros(shape=(3, 3, 3)), requires_grad=False)
+        t2 = tanh(t1)
+
+        assert t2.shape == (3, 3, 3)
+        assert not t2.requires_grad
