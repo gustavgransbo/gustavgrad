@@ -20,7 +20,7 @@ import numpy as np
 from tqdm import tqdm
 
 from gustavgrad import Tensor
-from gustavgrad.functions import tanh
+from gustavgrad.function import tanh
 from gustavgrad.loss import LogitBinaryCrossEntropy
 from gustavgrad.module import Module, Parameter
 from gustavgrad.optim import SGD

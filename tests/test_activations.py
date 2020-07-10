@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from gustavgrad import Tensor
-from gustavgrad.functions import sigmoid, tanh
+from gustavgrad.function import sigmoid, tanh
 
 
 class TestActivation(unittest.TestCase):

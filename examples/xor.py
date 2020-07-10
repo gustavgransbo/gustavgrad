@@ -6,7 +6,7 @@ Example of how to learn the XOR function using the gustavgrad library
 import numpy as np
 
 from gustavgrad import Tensor
-from gustavgrad.functions import tanh
+from gustavgrad.function import tanh
 from gustavgrad.loss import SquaredErrorLoss
 
 X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])

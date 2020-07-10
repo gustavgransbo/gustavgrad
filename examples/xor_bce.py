@@ -3,7 +3,7 @@
 import numpy as np
 
 from gustavgrad import Tensor
-from gustavgrad.functions import _sigmoid, tanh
+from gustavgrad.function import _sigmoid, tanh
 from gustavgrad.loss import LogitBinaryCrossEntropy
 
 X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
