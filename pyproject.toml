@@ -2,6 +2,9 @@
 name = "gustavgrad"
 version = "0.1.0"
 description = ""
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/gustavgransbo/gustavgrad"
 authors = ["Gustav Gränsbo <gustav.gransbo@gmail.com>"]
 
 [tool.poetry.dependencies]
