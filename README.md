@@ -1,6 +1,7 @@
 # gustavgrad
 [![Tests](https://github.com/gustavgransbo/gustavgrad/workflows/Tests/badge.svg)](https://github.com/gustavgransbo/gustavgrad/actions?workflow=Tests)
 [![codecov](https://codecov.io/gh/gustavgransbo/gustavgrad/branch/master/graph/badge.svg)](https://codecov.io/gh/gustavgransbo/gustavgrad)
+[![PyPI](https://img.shields.io/pypi/v/gustavgrad.svg)](https://pypi.org/project/gustavgrad)
 
 An autograd library built on NumPy, inspired by [Joel Grus's livecoding](https://github.com/joelgrus/autograd/tree/master).
 
