@@ -1,0 +1,29 @@
+name: Release
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Set up Nox
+      uses: excitedleigh/setup-nox@1.0.0
+
+    - name: Install Poetry
+      uses: dschep/install-poetry-action@v1.2
+
+    - name: Run Nox
+      run: nox
+
+    - name: Build with Poetry
+      run: poetry build
+
+    - name: Publish to PyPI
+      run: poetry publish --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
