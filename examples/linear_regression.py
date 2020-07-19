@@ -11,7 +11,7 @@ from gustavgrad import Tensor
 x = Tensor(np.random.rand(100, 3))
 
 # The function we want to learn
-coefs = Tensor(np.asarray([1.0, 3.0, 5.0]))
+coefs = Tensor([1.0, 3.0, 5.0])
 bias = 2
 y = x @ coefs + bias
 
