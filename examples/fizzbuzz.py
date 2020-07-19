@@ -10,7 +10,7 @@ are printed as are.
 
 Joel's aproach to solve this with a neural net builds upon taking the 10 bit
 binary-encodings of numbers as input, and outputing a one-hot encoded label
-corresponding to the four classes. Training is done on the numbers 100-1023.
+corresponding to the four classes. Training is done on the numbers 101-1023.
 """
 
 import time
@@ -43,15 +43,30 @@ def fizz_buzz_encode(x: int) -> List[int]:
         return [1, 0, 0, 0]
 
 
-X_train = Tensor(np.asarray([binary_encode(x) for x in range(101, 1024)]))
-y_train = Tensor(np.asarray([fizz_buzz_encode(x) for x in range(101, 1024)]))
+# Train on the numbers 116-1023
+X_train = Tensor(np.asarray([binary_encode(x) for x in range(116, 1024)]))
+y_train = Tensor(np.asarray([fizz_buzz_encode(x) for x in range(116, 1024)]))
+
+# Use 101-115 for validation
+X_val = Tensor(np.asarray([binary_encode(x) for x in range(101, 115)]))
+y_val = Tensor(np.asarray([fizz_buzz_encode(x) for x in range(101, 115)]))
+
+# The real test, 1-100
+X_test = Tensor([binary_encode(x) for x in range(1, 101)])
+y_test = Tensor([fizz_buzz_encode(x) for x in range(1, 101)])
+
+
+def accuracy(pred: Tensor, targets: Tensor) -> float:
+    """ Calculate the accuracy given one-hot encoded predictions and targets"""
+    pred_idx = pred.data.argmax(1)
+    return (pred_idx == targets.data.argmax(1)).mean()
 
 
 class Model(Module):
     """ A multi layer perceptron that should learn FizzBuzz function """
 
     def __init__(self, num_hidden: int = 100) -> None:
-        self.layer1 = Parameter(10, 100)
+        self.layer1 = Parameter(10, num_hidden)
         self.bias1 = Parameter(num_hidden)
         self.layer2 = Parameter(num_hidden, 4)
         self.bias2 = Parameter(4)
@@ -65,21 +80,21 @@ class Model(Module):
 
 epochs = 10_000
 mlp = Model()
-optimizer = SGD(0.01)
+optimizer = SGD(0.001)
 # Ideally I would use cross-entropy and a softmax layer since the targets are
 # mutually exclusive, but I haven't implemented cross entropy loss.
 bce_loss = LogitBinaryCrossEntropy()
 idx = np.arange(X_train.shape[0])
 batch_size = 64
 t1 = time.time()
-for _ in tqdm(range(epochs)):
+progress_bar = tqdm(range(epochs))
+for _ in progress_bar:
 
     for start in range(0, X_train.shape[0], batch_size):
+        mlp.zero_grad()
 
         X = X_train[idx[start : start + batch_size]]
         y = y_train[idx[start : start + batch_size]]
-
-        mlp.zero_grad()
 
         pred = mlp.predict(X)
         loss = bce_loss.loss(y, pred)
@@ -87,26 +102,30 @@ for _ in tqdm(range(epochs)):
 
         optimizer.step(mlp)
 
+    # Evaluate on validation set after each epoch
+    val_pred = mlp.predict(X_val)
+    val_accuracy = accuracy(val_pred, y_val)
+    progress_bar.set_description(
+        f"Validation set accuracy: {val_accuracy:.3f}"
+    )
+
     np.random.shuffle(idx)
 
-# Includes 0, even though we wont actually evaluate on 0
-X_test = Tensor([binary_encode(x) for x in range(0, 101)])
-y_test = Tensor([fizz_buzz_encode(x) for x in range(0, 101)])
-
 correct = 0
-for i in range(1, 101):
-    labels = [i, "Fizz", "Buzz", "FizzBuzz"]
+for i in range(0, 100):
+    labels = [i + 1, "Fizz", "Buzz", "FizzBuzz"]
     pred = mlp.predict(X_test[i])
     pred_idx = pred.data.argmax()
 
-    print(f"{i}: {labels[pred_idx]}, {labels[y_test[i].data.argmax()]}")
+    print(f"{i + 1}: {labels[pred_idx]}, {labels[y_test[i].data.argmax()]}")
     correct += y_test[i].data.argmax() == pred_idx
 
 print(f"Correct: {correct} / 100")
-print(f"Time taken (train+evaluate): {time.time()- t1}s")
+print(f"Time taken (train+evaluate): {time.time()- t1:.2f}s")
 
 """
 Output after training for 10,000 epochs:
+Validation set accuracy: 1.000: 100%|...| 10000/10000 [05:22<00:00, 31.03it/s]
 1: 1, 1
 2: 2, 2
 3: Fizz, Fizz
@@ -174,7 +193,7 @@ Output after training for 10,000 epochs:
 65: Buzz, Buzz
 66: Fizz, Fizz
 67: 67, 67
-68: 68, 68
+68: Buzz, 68
 69: Fizz, Fizz
 70: Buzz, Buzz
 71: 71, 71
@@ -196,7 +215,7 @@ Output after training for 10,000 epochs:
 87: Fizz, Fizz
 88: 88, 88
 89: 89, 89
-90: FizzBuzz, FizzBuzz
+90: Fizz, FizzBuzz
 91: 91, 91
 92: 92, 92
 93: Fizz, Fizz
@@ -207,6 +226,6 @@ Output after training for 10,000 epochs:
 98: 98, 98
 99: Fizz, Fizz
 100: Buzz, Buzz
-Correct: 100 / 100
-Time taken (train+evaluate): 313.07683658599854s
+Correct: 98 / 100
+Time taken (train+evaluate): 322.41s
 """
