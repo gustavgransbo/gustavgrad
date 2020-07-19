@@ -1,10 +1,13 @@
-""" Example of how to learn the XOR function using the gustavgrad library """
-
-import numpy as np
+"""
+Example of how to learn the XOR function using the gustavgrad library
+(This time with binary cross entropy loss)
+"""
 
 from gustavgrad import Tensor
 from gustavgrad.function import _sigmoid, tanh
 from gustavgrad.loss import LogitBinaryCrossEntropy
+from gustavgrad.module import Module, Parameter
+from gustavgrad.optim import SGD
 
 X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 
@@ -12,14 +15,14 @@ X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 y = Tensor([[1, 0], [0, 1], [1, 0], [1, 0]])
 
 
-class Model:
+class XORModel(Module):
     """ A multi layer perceptron that should learn the XOR function """
 
     def __init__(self) -> None:
-        self.layer1 = Tensor(np.random.randn(2, 4), requires_grad=True)
-        self.bias1 = Tensor(np.random.randn(4), requires_grad=True)
-        self.layer2 = Tensor(np.random.randn(4, 2), requires_grad=True)
-        self.bias2 = Tensor(np.random.randn(2), requires_grad=True)
+        self.layer1 = Parameter(2, 4)
+        self.bias1 = Parameter(4)
+        self.layer2 = Parameter(4, 2)
+        self.bias2 = Parameter(2)
 
     def predict(self, x: Tensor) -> Tensor:
         x = x @ self.layer1 + self.bias1
@@ -27,22 +30,10 @@ class Model:
         x = x @ self.layer2 + self.bias2
         return x
 
-    def zero_grad(self) -> None:
-        self.layer1.zero_grad()
-        self.layer2.zero_grad()
-        self.bias1.zero_grad()
-        self.bias2.zero_grad()
-
-    def sgd_step(self, lr: float = 0.001) -> None:
-        self.layer1 -= self.layer1.grad * lr
-        self.layer2 -= self.layer2.grad * lr
-        self.bias1 -= self.bias1.grad * lr
-        self.bias2 -= self.bias2.grad * lr
-
 
 epochs = 1000
-lr = 0.01
-mlp = Model()
+optim = SGD(lr=0.01)
+mlp = XORModel()
 bce_loss = LogitBinaryCrossEntropy()
 
 for _ in range(epochs):
@@ -53,7 +44,7 @@ for _ in range(epochs):
     loss = bce_loss.loss(y, logits)
     loss.backward()
 
-    mlp.sgd_step(lr)
+    optim.step(mlp)
 
     print(loss.data)
 
