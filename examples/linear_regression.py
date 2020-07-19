@@ -27,10 +27,9 @@ for _ in range(1000):
     # Train in batches
     idx = np.arange(x.shape[0])
     np.random.shuffle(idx)
+    w.zero_grad(), b.zero_grad()
 
     for start in range(0, x.shape[0], batch_size):
-        w.zero_grad(), b.zero_grad()
-
         batch_idx = idx[start : start + batch_size]
         pred = x[batch_idx] @ w + b
         errors = y[batch_idx] - pred
