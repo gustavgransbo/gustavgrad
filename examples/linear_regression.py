@@ -11,7 +11,7 @@ from gustavgrad import Tensor
 x = Tensor(np.random.rand(100, 3))
 
 # The function we want to learn
-coefs = Tensor(np.asarray([1.0, 3.0, 5.0]))
+coefs = Tensor([1.0, 3.0, 5.0])
 bias = 2
 y = x @ coefs + bias
 
@@ -27,10 +27,9 @@ for _ in range(1000):
     # Train in batches
     idx = np.arange(x.shape[0])
     np.random.shuffle(idx)
+    w.zero_grad(), b.zero_grad()
 
     for start in range(0, x.shape[0], batch_size):
-        w.zero_grad(), b.zero_grad()
-
         batch_idx = idx[start : start + batch_size]
         pred = x[batch_idx] @ w + b
         errors = y[batch_idx] - pred
