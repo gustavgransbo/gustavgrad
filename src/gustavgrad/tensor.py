@@ -74,7 +74,7 @@ class Tensor:
         # Private, see self.data() property for explanation
         # TODO: Perhaps cast to float?
         self._data = ensure_array(data)
-        self.requires_grad = requires_grad
+        self._requires_grad = requires_grad
         self.depends_on = depends_on
         self.grad: Optional["Tensor"] = None
         self.shape: tuple = self._data.shape
@@ -88,6 +88,10 @@ class Tensor:
             + ("\n" if self.data.ndim > 1 else "")
             + f"{self.data}, requires_grad={self.requires_grad})"
         )
+
+    @property
+    def requires_grad(self) -> bool:
+        return self._requires_grad
 
     @property
     def data(self) -> np.ndarray:
