@@ -103,8 +103,9 @@ for _ in progress_bar:
         optimizer.step(mlp)
 
     # Evaluate on validation set after each epoch
-    val_pred = mlp.predict(X_val)
-    val_accuracy = accuracy(val_pred, y_val)
+    with mlp.no_grad():
+        val_pred = mlp.predict(X_val)
+        val_accuracy = accuracy(val_pred, y_val)
     progress_bar.set_description(
         f"Validation set accuracy: {val_accuracy:.3f}"
     )
