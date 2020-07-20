@@ -1,9 +1,11 @@
 """
 Tensor Class and affiliated functions
 """
+from contextlib import contextmanager
 from typing import (
     Any,
     Callable,
+    Iterator,
     List,
     NamedTuple,
     Optional,
@@ -74,7 +76,7 @@ class Tensor:
         # Private, see self.data() property for explanation
         # TODO: Perhaps cast to float?
         self._data = ensure_array(data)
-        self.requires_grad = requires_grad
+        self._requires_grad = requires_grad
         self.depends_on = depends_on
         self.grad: Optional["Tensor"] = None
         self.shape: tuple = self._data.shape
@@ -88,6 +90,10 @@ class Tensor:
             + ("\n" if self.data.ndim > 1 else "")
             + f"{self.data}, requires_grad={self.requires_grad})"
         )
+
+    @property
+    def requires_grad(self) -> bool:
+        return self._requires_grad
 
     @property
     def data(self) -> np.ndarray:
@@ -120,6 +126,15 @@ class Tensor:
 
         for tensor, grad_fn in self.depends_on:
             tensor.backward(grad_fn(grad))
+
+    @contextmanager
+    def no_grad(self) -> Iterator[None]:
+        original_requires_grad = self.requires_grad
+        self._requires_grad = False
+        try:
+            yield
+        finally:
+            self._requires_grad = original_requires_grad
 
     def __add__(self, other: Tensorable) -> "Tensor":
         return _add(self, ensure_tensor(other))
