@@ -1,4 +1,5 @@
 import inspect
+from contextlib import ExitStack, contextmanager
 from typing import Iterator
 
 import numpy as np
@@ -27,3 +28,10 @@ class Module:
     def zero_grad(self) -> None:
         for parameter in self.parameters():
             parameter.zero_grad()
+
+    @contextmanager
+    def no_grad(self) -> Iterator[None]:
+        with ExitStack() as stack:
+            for parameter in self.parameters():
+                stack.enter_context(parameter.no_grad())
+            yield
