@@ -93,3 +93,26 @@ class TestModule:
         np.testing.assert_allclose(
             model_with_sub_model_and_non_zero_grad.layer2.grad, 0
         )
+
+    def test_no_grad_updates_all_parameter(self, model: Model) -> None:
+        with model.no_grad():
+            assert not any(
+                [param.requires_grad for param in model.parameters()]
+            )
+
+    def test_no_grad_resets_all_parameter(self, model: Model) -> None:
+        with model.no_grad():
+            pass
+        assert all([param.requires_grad for param in model.parameters()])
+
+    def test_grad_intact(self, model_with_non_zero_grad: Model) -> None:
+        initial_grads = [
+            param.grad for param in model_with_non_zero_grad.parameters()
+        ]
+
+        with model_with_non_zero_grad.no_grad():
+            _ = model_with_non_zero_grad.predict(Tensor([[1, 2], [1, 3]]))
+
+        assert [
+            param.grad for param in model_with_non_zero_grad.parameters()
+        ] == initial_grads
