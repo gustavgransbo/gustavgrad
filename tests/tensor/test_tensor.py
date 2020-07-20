@@ -65,3 +65,50 @@ class TestTensorBasics:
         tensor = Tensor(1, requires_grad=True)
         tensor.backward()
         assert tensor.grad.tolist() == 1
+
+
+class TestTensorNoGrad:
+    @pytest.fixture
+    def tensor_with_grad(self) -> Tensor:
+        t1 = Tensor(1, requires_grad=True)
+        t2 = t1 + 1
+        t2.backward()
+
+        assert not np.allclose(t1.grad, 0)
+
+        return t1
+
+    def test_requires_grad_false_in_context_manager(self) -> None:
+        tensor = Tensor(1, requires_grad=True)
+        with tensor.no_grad():
+            assert not tensor.requires_grad
+
+    def test_requires_grad_resets(self) -> None:
+        tensor = Tensor(1, requires_grad=True)
+        with tensor.no_grad():
+            pass
+        assert tensor.requires_grad
+
+    def test_requires_grad_resets_after_exception(self) -> None:
+        tensor = Tensor(1, requires_grad=True)
+        try:
+            with tensor.no_grad():
+                raise Exception()
+        except Exception:
+            pass
+        assert tensor.requires_grad
+
+    def test_dependencies(self) -> None:
+        t1 = Tensor(1, requires_grad=True)
+        with t1.no_grad():
+            t2 = t1 + 1
+
+        assert not t2.requires_grad
+        assert t1 not in [dependency.tensor for dependency in t2.depends_on]
+
+    def test_grad_intact(self, tensor_with_grad) -> None:
+        initial_grad = tensor_with_grad.grad
+        with tensor_with_grad.no_grad():
+            _ = tensor_with_grad * 100
+
+        assert tensor_with_grad.grad == initial_grad
