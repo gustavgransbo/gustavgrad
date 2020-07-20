@@ -1,6 +1,6 @@
 """
 Example of how to learn the XOR function using the gustavgrad library
-(This time with binary cross entropy loss)
+(This time with binary cross entropy loss and one-hot encoded targets)
 """
 
 from gustavgrad import Tensor
@@ -9,20 +9,22 @@ from gustavgrad.loss import LogitBinaryCrossEntropy
 from gustavgrad.module import Module, Parameter
 from gustavgrad.optim import SGD
 
-X = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
+xor_input = Tensor([[0, 0], [0, 1], [1, 0], [1, 1]])
 
 # one-hot encoded labels
-y = Tensor([[1, 0], [0, 1], [1, 0], [1, 0]])
+xor_targets = Tensor([[1, 0], [0, 1], [0, 1], [1, 0]])
 
 
-class XORModel(Module):
-    """ A multi layer perceptron that should learn the XOR function """
+class MultilayerPerceptron(Module):
+    """ A multilayer perceptron with two layers """
 
-    def __init__(self) -> None:
-        self.layer1 = Parameter(2, 4)
-        self.bias1 = Parameter(4)
-        self.layer2 = Parameter(4, 2)
-        self.bias2 = Parameter(2)
+    def __init__(
+        self, input_size: int, output_size: int, hidden_size: int = 100
+    ) -> None:
+        self.layer1 = Parameter(input_size, hidden_size)
+        self.bias1 = Parameter(hidden_size)
+        self.layer2 = Parameter(hidden_size, output_size)
+        self.bias2 = Parameter(output_size)
 
     def predict(self, x: Tensor) -> Tensor:
         x = x @ self.layer1 + self.bias1
@@ -33,20 +35,20 @@ class XORModel(Module):
 
 epochs = 1000
 optim = SGD(lr=0.01)
-mlp = XORModel()
+xor_mlp = MultilayerPerceptron(input_size=2, output_size=2, hidden_size=4)
 bce_loss = LogitBinaryCrossEntropy()
 
 for _ in range(epochs):
 
-    mlp.zero_grad()
+    xor_mlp.zero_grad()
 
-    logits = mlp.predict(X)
-    loss = bce_loss.loss(y, logits)
+    logits = xor_mlp.predict(xor_input)
+    loss = bce_loss.loss(xor_targets, logits)
     loss.backward()
 
-    optim.step(mlp)
+    optim.step(xor_mlp)
 
     print(loss.data)
 
 # Apply sigmoid to logits to get the actual predictions
-print(_sigmoid(logits.data))
+print(_sigmoid(logits.data).round(4))
