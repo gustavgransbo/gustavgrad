@@ -41,7 +41,7 @@ jobs:
         key: gustavgrad-nox-venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.session }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Set up Nox
-      uses: excitedleigh/setup-nox@1.0.0
+      uses: excitedleigh/setup-nox@v2.0.0
 
     - name: Run Nox
       run: nox --session ${{ matrix.session }}-${{ matrix.python-version }}

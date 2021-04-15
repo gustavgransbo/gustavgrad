@@ -28,7 +28,7 @@ jobs:
         key: gustavgrad-nox-venv-coverage-${{ hashFiles('**/poetry.lock') }}
 
     - name: Set up Nox
-      uses: excitedleigh/setup-nox@1.0.0
+      uses: excitedleigh/setup-nox@v2.0.0
 
     - name: Upload coverage to Codecov
       run: nox --sessions tests-3.8 codecov

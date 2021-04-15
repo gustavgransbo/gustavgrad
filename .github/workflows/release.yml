@@ -14,7 +14,7 @@ jobs:
         python-version: 3.8
 
     - name: Set up Nox
-      uses: excitedleigh/setup-nox@1.0.0
+      uses: excitedleigh/setup-nox@v2.0.0
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.1.3
