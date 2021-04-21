@@ -13,6 +13,18 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Upgrade pip
+      run: pip install --constraint=.github/workflows/constraints.txt pip
+
+    - name: Install Poetry
+      run: pip install --constraint=.github/workflows/constraints.txt poetry
+      
+    - name: Install Nox
+      run: pip install --constraint=.github/workflows/constraints.txt nox
+
+    - name: Install nox-poetry
+      run: pip install --constraint=.github/workflows/constraints.txt nox-poetry
+
     - name: Set up Nox
       uses: excitedleigh/setup-nox@v2.0.0
 
