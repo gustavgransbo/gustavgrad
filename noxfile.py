@@ -9,7 +9,7 @@ nox.options.sessions = ["tests", "mypy", "lint"]
 def tests(session):
     """ Run test suit."""
     args = session.posargs or ["--cov"]
-    session.install("pytest", "pytest-cov", ".")
+    session.install("pytest", "pytest-cov", "coverage[toml]", ".")
     session.run("pytest", *args)
 
 
@@ -34,6 +34,6 @@ def mypy(session):
 @nox_poetry.session(python="3.8")
 def codecov(session):
     """ Upload coverage data to Codecov"""
-    session.install("codecov", "coverage")
+    session.install("codecov", "coverage[toml]")
     session.run("coverage", "xml")
     session.run("codecov", *session.posargs)
